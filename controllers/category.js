@@ -3,6 +3,7 @@ import { CategoryModel } from '../models/category.js';
 
 // الدالة دي بتخيليني اما اعمل اويت للرسبونس بتاع المونجو سرفر لما يحصل ايرور ف هي هترميه تلقائي ل اكسبرس
 import asyncHandler from 'express-async-handler';
+import ApiError from '../utils/ApiError.js';
 
 // get all cats
 export const getCategories = asyncHandler(async (req, res, next) => {
@@ -18,14 +19,17 @@ export const getCategories = asyncHandler(async (req, res, next) => {
 export const getCategory = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const category = await CategoryModel.findById(id);
-  if (!category)
-    return res.status(404).send({ message: 'Category not found.' });
+  if (!category) return next(new ApiError(`Category not found`, 404));
+
+  // return res.status(404).send({ message: 'Category not found.'' });
   res.status(200).json({ data: category });
 });
 
 // create cat
 export const createCategory = asyncHandler(async (req, res, next) => {
-  const name = req.body.name;
+  const { name } = req.body;
+
+  if (!name) return next(new ApiError(`Category name is required.`, 404));
   const category = await CategoryModel.create({
     name,
     slug: slugify(name),
@@ -52,13 +56,16 @@ export const updateCategory = asyncHandler(async (req, res, next) => {
   const { name } = req.body;
   const { id } = req.params;
 
+  if (!name) return next(new ApiError(`Category name is required.`, 404));
+  if (!id) return next(new ApiError(`Category id is required.`, 404));
+
   const category = await CategoryModel.findOneAndUpdate(
     { _id: id }, // find by what ?
     { name, slug: slugify(name) }, // what to update
     { new: true } // get back the new updated category (if not set it returns the old one).
   );
-  if (!category)
-    return res.status(404).send({ message: 'Category not found.' });
+  if (!category) return next(new ApiError(`Category not found.`, 404));
+
   res.status(200).json({ data: category });
 });
 
@@ -68,7 +75,6 @@ export const deleteCategory = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
 
   const category = await CategoryModel.findOneAndDelete(id);
-  if (!category)
-    return res.status(404).send({ message: 'Category not found.' });
+  if (!category) return next(new ApiError(`Category not found.`, 404));
   res.status(200).json({ message: 'deleted' });
 });
