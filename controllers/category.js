@@ -19,8 +19,7 @@ export const getCategories = asyncHandler(async (req, res, next) => {
 export const getCategory = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const category = await CategoryModel.findById(id);
-  if (!category) return next(new ApiError(`Category not found`, 404));
-
+  if (!category) return next(new ApiError(`subCategory not found.`, 404));
   // return res.status(404).send({ message: 'Category not found.'' });
   res.status(200).json({ data: category });
 });
@@ -29,7 +28,6 @@ export const getCategory = asyncHandler(async (req, res, next) => {
 export const createCategory = asyncHandler(async (req, res, next) => {
   const { name } = req.body;
 
-  if (!name) return next(new ApiError(`Category name is required.`, 404));
   const category = await CategoryModel.create({
     name,
     slug: slugify(name),
@@ -55,9 +53,6 @@ export const createCategory = asyncHandler(async (req, res, next) => {
 export const updateCategory = asyncHandler(async (req, res, next) => {
   const { name } = req.body;
   const { id } = req.params;
-
-  if (!name) return next(new ApiError(`Category name is required.`, 404));
-  if (!id) return next(new ApiError(`Category id is required.`, 404));
 
   const category = await CategoryModel.findOneAndUpdate(
     { _id: id }, // find by what ?
