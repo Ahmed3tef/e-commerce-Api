@@ -3,6 +3,7 @@ import { Router } from 'express';
 import {
   createSubCategory,
   deleteSubCategory,
+  getCategorySubCategories,
   getSubCategories,
   getSubCategory,
   updateSubCategory,
@@ -17,6 +18,8 @@ import {
 const router = Router();
 
 router.get('/', getSubCategories);
+
+router.get('/fromCategory', getCategorySubCategories);
 
 router
   .route('/one/:id')

@@ -6,11 +6,32 @@ import ApiError from '../utils/ApiError.js';
 import { SubCategoryModel } from '../models/subCategory.js';
 
 export const getSubCategories = asyncHandler(async (req, res, next) => {
+  const { categoryId } = req.params;
   const page = +req.query.page || 1;
   const limit = +req.query.limit || 5;
   const skip = (page - 1) * limit;
 
-  const subCategories = await SubCategoryModel.find({})
+  let filterObj = {};
+  if (categoryId) filterObj = { category: categoryId };
+
+  const subCategories = await SubCategoryModel.find({ filterObj })
+    .skip(skip)
+    .limit(limit)
+    .populate({ path: 'category', select: 'name' });
+
+  res.status(200).json({ status: 'success', data: subCategories });
+});
+
+export const getCategorySubCategories = asyncHandler(async (req, res, next) => {
+  console.log(req.query);
+  const { categoryId } = req.query;
+  if (!categoryId) return next(new ApiError(`Category id is required.`, 401));
+
+  const page = +req.query.page || 1;
+  const limit = +req.query.limit || 5;
+  const skip = (page - 1) * limit;
+
+  const subCategories = await SubCategoryModel.find({ category: categoryId })
     .skip(skip)
     .limit(limit)
     .populate({ path: 'category', select: 'name' });

@@ -9,6 +9,7 @@ import { dbConnection } from './utils/dbConnection.js';
 // routes
 import categoryRoutes from './routes/category.js';
 import subCategoryRoutes from './routes/subCategory.js';
+import brandsRoutes from './routes/brand.js';
 
 dotenv.config({ path: './config.env' });
 
@@ -28,6 +29,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use('/categories', categoryRoutes);
 app.use('/subcategories', subCategoryRoutes);
+app.use('/brands', brandsRoutes);
 
 // route doesn't match
 app.all('*', (req, res, next) => {

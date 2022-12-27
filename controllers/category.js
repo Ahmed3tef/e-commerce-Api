@@ -19,7 +19,7 @@ export const getCategories = asyncHandler(async (req, res, next) => {
 export const getCategory = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const category = await CategoryModel.findById(id);
-  if (!category) return next(new ApiError(`subCategory not found.`, 404));
+  if (!category) return next(new ApiError(`category not found.`, 404));
   // return res.status(404).send({ message: 'Category not found.'' });
   res.status(200).json({ data: category });
 });

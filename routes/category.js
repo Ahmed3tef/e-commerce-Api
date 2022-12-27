@@ -14,7 +14,11 @@ import {
   updateCategoryValidation,
 } from '../utils/validations/category.js';
 
+import subCategoryRoutes from './subCategory.js';
+
 const router = Router();
+
+router.use('/:categoryId/subcategories', subCategoryRoutes);
 
 router.get('/', getCategories);
 

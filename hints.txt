@@ -9,3 +9,41 @@ select => 'name color size -_id'
 دي انت بتختار الفيلدز اللي  انت محتاجها بس ف الاوبجكت اللي انت اختارته
 بين كل حاجة والتانية مسافة بس 
 ولو انا مش عايز ال اي دي بعمله داش عشان مجيبوش 
+
+
+/////
+
+to get all subCategories in category:
+
+route should be: 
+GET api/categories/:categoryId/subCategories 
+ودا باترن المفروض تمشي عليه 
+
+عشان نقدر نعمل حاجة زي دي المفروض هنعملها بالنستد راوتس 
+
+1- هتروح ف الراوت الاول وتعمل الاتي 
+
+import subCategoryRoutes from './subCategory.js';
+router.use('/:categoryId/subcategories', subCategoryRoutes);
+
+2- هتروح ف الراوتر بتاع الحاجة اللي انت عايز ترجعها وهنا ف المثال بتاعنا هي الفئات الفرعية 
+ 
+1- const router = Router({mergeParams: true});
+بدل ما كان فاضي بتديله الاوبشن دا عشان تقوله لو في اي بارامز جاية من راوت قبل دا ف انا عايزه منه 
+ودا عشان نقدر ناخد الاي دي بتاع الفئة الرئيسية 
+
+2- دلوقتي الراوت التاني دا لما هيدخل هيكون داخل علي الراوت الاساسي اللي هو / بس 
+
+ف الهاندل بتاعه هيكون ف الكنترولر اللي علي البيز
+
+1- const {categoryId} = req.params;
+2- const filterObj = {};
+
+ if (categoryId) filterObj = { category: categoryId };
+
+  const subCategories = await SubCategoryModel.find({ filterObj })
+
+
+
+او الطريقة التانية انك تجيبها من الكويري اللي انت بتمرره ل الركوست وتديله ال cat id 
+
