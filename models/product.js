@@ -7,7 +7,7 @@ const productSchema = new Schema(
       required: [true, 'Product must have a name'],
       unique: [true, 'Product name must be unique'],
       minlength: [3, 'Too short name'],
-      maxlength: [32, 'Too long name'],
+      // maxlength: [50, 'Too long name'],
     },
 
     slug: {
@@ -24,7 +24,7 @@ const productSchema = new Schema(
       type: Number,
       required: [true, 'Product price is required'],
       trim: true,
-      max: [15, 'Too long product price'],
+      max: [100000, 'Too long product price'],
     },
     quantity: {
       type: Number,
@@ -40,7 +40,7 @@ const productSchema = new Schema(
       required: [true, 'Product must have at least one image.'],
     },
     images: [String],
-
+    colors: [String],
     category: {
       type: Schema.ObjectId,
       required: [true, 'category Id is required'],
