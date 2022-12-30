@@ -4,6 +4,7 @@ import { BrandModel } from '../models/brand.js';
 // الدالة دي بتخيليني اما اعمل اويت للرسبونس بتاع المونجو سرفر لما يحصل ايرور ف هي هترميه تلقائي ل اكسبرس
 import asyncHandler from 'express-async-handler';
 import ApiError from '../utils/ApiError.js';
+import { deleteHandler } from './crud-handlres.js';
 
 // get all cats
 export const getBrands = asyncHandler(async (req, res, next) => {
@@ -66,10 +67,4 @@ export const updateBrand = asyncHandler(async (req, res, next) => {
 
 // update cat
 
-export const deleteBrand = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-
-  const brand = await BrandModel.findOneAndDelete(id);
-  if (!brand) return next(new ApiError(`Brand not found.`, 404));
-  res.status(200).json({ message: 'deleted' });
-});
+export const deleteBrand = deleteHandler(BrandModel);

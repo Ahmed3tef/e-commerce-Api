@@ -4,6 +4,7 @@ import slugify from 'slugify';
 import asyncHandler from 'express-async-handler';
 import ApiError from '../utils/ApiError.js';
 import { SubCategoryModel } from '../models/subCategory.js';
+import { deleteHandler } from './crud-handlres.js';
 
 export const getSubCategories = asyncHandler(async (req, res, next) => {
   const { categoryId } = req.params;
@@ -72,10 +73,4 @@ export const updateSubCategory = asyncHandler(async (req, res, next) => {
   res.status(200).json({ data: subCategory });
 });
 
-export const deleteSubCategory = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-
-  const subCategory = await SubCategoryModel.findOneAndDelete(id);
-  if (!subCategory) return next(new ApiError(`subCategory not found.`, 404));
-  res.status(200).json({ message: 'deleted' });
-});
+export const deleteSubCategory = deleteHandler(SubCategoryModel);

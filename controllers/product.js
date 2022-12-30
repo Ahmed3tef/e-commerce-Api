@@ -5,6 +5,7 @@ import asyncHandler from 'express-async-handler';
 import ApiError from '../utils/ApiError.js';
 import { ProductModel } from '../models/product.js';
 import ApiFeatures from '../utils/ApiFeatures.js';
+import { deleteHandler } from './crud-handlres.js';
 
 export const getProducts = asyncHandler(async (req, res, next) => {
   // // 1- filtering
@@ -130,10 +131,4 @@ export const updateProduct = asyncHandler(async (req, res, next) => {
   res.status(200).json({ data: product });
 });
 
-export const deleteProduct = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-
-  const product = await ProductModel.findOneAndDelete(id);
-  if (!product) return next(new ApiError(`Product not found.`, 404));
-  res.status(200).json({ message: 'deleted' });
-});
+export const deleteProduct = deleteHandler(ProductModel);

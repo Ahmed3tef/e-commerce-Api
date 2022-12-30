@@ -4,6 +4,7 @@ import { CategoryModel } from '../models/category.js';
 // الدالة دي بتخيليني اما اعمل اويت للرسبونس بتاع المونجو سرفر لما يحصل ايرور ف هي هترميه تلقائي ل اكسبرس
 import asyncHandler from 'express-async-handler';
 import ApiError from '../utils/ApiError.js';
+import { deleteHandler } from './crud-handlres.js';
 
 // get all cats
 export const getCategories = asyncHandler(async (req, res, next) => {
@@ -66,10 +67,4 @@ export const updateCategory = asyncHandler(async (req, res, next) => {
 
 // update cat
 
-export const deleteCategory = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-
-  const category = await CategoryModel.findOneAndDelete(id);
-  if (!category) return next(new ApiError(`Category not found.`, 404));
-  res.status(200).json({ message: 'deleted' });
-});
+export const deleteCategory = deleteHandler(CategoryModel);

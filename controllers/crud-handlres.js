@@ -5,11 +5,16 @@ import ApiFeatures from '../utils/ApiFeatures.js';
 // getAll
 export const getAllHandler = Model =>
   asyncHandler(async (req, res, next) => {
-    const { id } = req.params;
+    const apiFeatures = new ApiFeatures(Model.find(), req.query)
+      .paginate()
+      .sort()
+      .search()
+      .filter()
+      .limitFields();
 
-    const document = await Model.findOneAndDelete(id);
-    if (!document) return next(new ApiError(`document not found.`, 404));
-    res.status(200).json({ message: 'deleted' });
+    const documents = await apiFeatures.mongooseQuery;
+
+    res.status(200).json({ status: 'success', data: documents });
   });
 
 // getOne
@@ -25,16 +30,9 @@ export const getOneHandler = Model =>
 // create
 export const createHandler = Model =>
   asyncHandler(async (req, res, next) => {
-    const apiFeatures = new ApiFeatures(Model.find(), req.query)
-      .paginate()
-      .sort()
-      .search()
-      .filter()
-      .limitFields();
+    const document = await Model.create(req.body);
 
-    const documents = await apiFeatures.mongooseQuery;
-
-    res.status(200).json({ status: 'success', data: documents });
+    res.status(201).json({ status: 'success', data: document });
   });
 
 // update
@@ -57,7 +55,7 @@ export const deleteHandler = Model =>
   asyncHandler(async (req, res, next) => {
     const { id } = req.params;
 
-    const document = await Model.findOneAndDelete(id);
+    const document = await Model.findByIdAndDelete(id);
     if (!document) return next(new ApiError(`document not found.`, 404));
     res.status(200).json({ message: 'deleted' });
   });
