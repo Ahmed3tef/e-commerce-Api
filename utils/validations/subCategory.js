@@ -1,5 +1,6 @@
 import { check } from 'express-validator';
 import { validationMiddleware } from '../../middlewares/validation.js';
+import slugify from 'slugify';
 
 export const getSubCategoryValidation = [
   check('id').isMongoId().withMessage('Invalid category id'),
@@ -16,7 +17,12 @@ export const createSubCategoryValidation = [
     .isLength({ min: 3 })
     .withMessage('name is too short')
     .isLength({ max: 30 })
-    .withMessage('name is too long.'),
+    .withMessage('name is too long.')
+    .custom((val, { req }) => {
+      req.body.slug = slugify(val);
+      return true;
+    }),
+
   check('categoryId')
     .notEmpty()
     .withMessage('category id is required.')

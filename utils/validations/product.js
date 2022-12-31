@@ -123,7 +123,7 @@ export const getProductValidator = [
 
 export const updateProductValidator = [
   check('id').isMongoId().withMessage('Invalid ID formate'),
-  body('title')
+  body('name')
     .optional()
     .custom((val, { req }) => {
       req.body.slug = slugify(val);

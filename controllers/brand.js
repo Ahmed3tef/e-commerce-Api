@@ -1,70 +1,49 @@
-import slugify from 'slugify';
 import { BrandModel } from '../models/brand.js';
 
-// الدالة دي بتخيليني اما اعمل اويت للرسبونس بتاع المونجو سرفر لما يحصل ايرور ف هي هترميه تلقائي ل اكسبرس
-import asyncHandler from 'express-async-handler';
-import ApiError from '../utils/ApiError.js';
-import { deleteHandler } from './crud-handlres.js';
+import {
+  createHandler,
+  deleteHandler,
+  getAllHandler,
+  getOneHandler,
+  updateHandler,
+} from './crud-handlres.js';
 
-// get all cats
-export const getBrands = asyncHandler(async (req, res, next) => {
-  // pagination
-  const page = +req.query.page || 1;
-  const limit = +req.query.limit || 5;
-  const skip = (page - 1) * limit;
-  const brands = await BrandModel.find({}).skip(skip).limit(limit); // by {} it returns all the data
-  res.status(200).json({ status: 'success', data: brands });
-});
+// get all brends
+export const getBrands = getAllHandler(BrandModel);
 
-// get one cat
-export const getBrand = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const brand = await BrandModel.findById(id);
-  if (!brand) return next(new ApiError(`brand not found.`, 404));
-  // return res.status(404).send({ message: 'Brand not found.'' });
-  res.status(200).json({ data: brand });
-});
+// get one brand
+export const getBrand = getOneHandler(BrandModel, 'Brand');
 
-// create cat
-export const createBrand = asyncHandler(async (req, res, next) => {
-  const { name } = req.body;
+// create brand
+export const createBrand = createHandler(BrandModel);
 
-  const brand = await BrandModel.create({
-    name,
-    slug: slugify(name),
-  });
-  res.status(201).json({ status: 'success', data: brand });
+// export const createBrand = asyncHandler(async (req, res, next) => {
+//   const { name } = req.body;
 
-  // could also be then catch like that
+//   const brand = await BrandModel.create({
+//     name,
+//     slug: slugify(name),
+//   });
+//   res.status(201).json({ status: 'success', data: brand });
 
-  // BrandModel.create({
-  //   name,
-  //   slug: slugify(name),
-  // })
-  //   .then(Brand =>
-  //     res.status(201).send({ status: 'success', data: brand })
-  //   )
-  //   .catch(err => res.status(400).json({ err }));
+//   // could also be then brendch like that
 
-  // could also be in try catch blocks
-});
+//   // BrandModel.create({
+//   //   name,
+//   //   slug: slugify(name),
+//   // })
+//   //   .then(Brand =>
+//   //     res.status(201).send({ status: 'success', data: brand })
+//   //   )
+//   //   .brendch(err => res.status(400).json({ err }));
 
-// update cat
+//   // could also be in try brendch blocks
+// });
 
-export const updateBrand = asyncHandler(async (req, res, next) => {
-  const { name } = req.body;
-  const { id } = req.params;
+// update brand
 
-  const brand = await BrandModel.findOneAndUpdate(
-    { _id: id }, // find by what ?
-    { name, slug: slugify(name) }, // what to update
-    { new: true } // get back the new updated brand (if not set it returns the old one).
-  );
-  if (!brand) return next(new ApiError(`Brand not found.`, 404));
+export const updateBrand = updateHandler(BrandModel, 'Brand');
 
-  res.status(200).json({ data: brand });
-});
+// update brand
 
-// update cat
-
-export const deleteBrand = deleteHandler(BrandModel);
+export const deleteBrand = deleteHandler(BrandModel, 'Brand');

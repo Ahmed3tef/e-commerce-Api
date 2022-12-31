@@ -1,70 +1,49 @@
-import slugify from 'slugify';
 import { CategoryModel } from '../models/category.js';
 
-// الدالة دي بتخيليني اما اعمل اويت للرسبونس بتاع المونجو سرفر لما يحصل ايرور ف هي هترميه تلقائي ل اكسبرس
-import asyncHandler from 'express-async-handler';
-import ApiError from '../utils/ApiError.js';
-import { deleteHandler } from './crud-handlres.js';
+import {
+  createHandler,
+  deleteHandler,
+  getAllHandler,
+  getOneHandler,
+  updateHandler,
+} from './crud-handlres.js';
 
 // get all cats
-export const getCategories = asyncHandler(async (req, res, next) => {
-  // pagination
-  const page = +req.query.page || 1;
-  const limit = +req.query.limit || 5;
-  const skip = (page - 1) * limit;
-  const categories = await CategoryModel.find({}).skip(skip).limit(limit); // by {} it returns all the data
-  res.status(200).json({ status: 'success', data: categories });
-});
+export const getCategories = getAllHandler(CategoryModel);
 
 // get one cat
-export const getCategory = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const category = await CategoryModel.findById(id);
-  if (!category) return next(new ApiError(`category not found.`, 404));
-  // return res.status(404).send({ message: 'Category not found.'' });
-  res.status(200).json({ data: category });
-});
+export const getCategory = getOneHandler(CategoryModel, 'Category');
 
 // create cat
-export const createCategory = asyncHandler(async (req, res, next) => {
-  const { name } = req.body;
 
-  const category = await CategoryModel.create({
-    name,
-    slug: slugify(name),
-  });
-  res.status(201).json({ status: 'success', data: category });
+// export const createCategory = asyncHandler(async (req, res, next) => {
+//   const { name } = req.body;
 
-  // could also be then catch like that
+//   const category = await CategoryModel.create({
+//     name,
+//     slug: slugify(name),
+//   });
+//   res.status(201).json({ status: 'success', data: category });
 
-  // CategoryModel.create({
-  //   name,
-  //   slug: slugify(name),
-  // })
-  //   .then(category =>
-  //     res.status(201).send({ status: 'success', data: category })
-  //   )
-  //   .catch(err => res.status(400).json({ err }));
+//   // could also be then catch like that
 
-  // could also be in try catch blocks
-});
+//   // CategoryModel.create({
+//   //   name,
+//   //   slug: slugify(name),
+//   // })
+//   //   .then(category =>
+//   //     res.status(201).send({ status: 'success', data: category })
+//   //   )
+//   //   .catch(err => res.status(400).json({ err }));
 
-// update cat
-
-export const updateCategory = asyncHandler(async (req, res, next) => {
-  const { name } = req.body;
-  const { id } = req.params;
-
-  const category = await CategoryModel.findOneAndUpdate(
-    { _id: id }, // find by what ?
-    { name, slug: slugify(name) }, // what to update
-    { new: true } // get back the new updated category (if not set it returns the old one).
-  );
-  if (!category) return next(new ApiError(`Category not found.`, 404));
-
-  res.status(200).json({ data: category });
-});
+//   // could also be in try catch blocks
+// });
+export const createCategory = createHandler(CategoryModel);
 
 // update cat
 
-export const deleteCategory = deleteHandler(CategoryModel);
+export const updateCategory = updateHandler(CategoryModel, 'Category');
+
+// update cat
+
+export const deleteCategory = deleteHandler(CategoryModel, 'Category');

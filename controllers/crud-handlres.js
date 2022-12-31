@@ -1,9 +1,10 @@
+// الدالة دي بتخيليني اما اعمل اويت للرسبونس بتاع المونجو سرفر لما يحصل ايرور ف هي هترميه تلقائي ل اكسبرس
 import asyncHandler from 'express-async-handler';
 import ApiError from '../utils/ApiError.js';
 import ApiFeatures from '../utils/ApiFeatures.js';
 
 // getAll
-export const getAllHandler = Model =>
+export const getAllHandler = (Model, modelName) =>
   asyncHandler(async (req, res, next) => {
     const apiFeatures = new ApiFeatures(Model.find(), req.query)
       .paginate()
@@ -18,13 +19,16 @@ export const getAllHandler = Model =>
   });
 
 // getOne
-export const getOneHandler = Model =>
+export const getOneHandler = (Model, modelName) =>
   asyncHandler(async (req, res, next) => {
     const { id } = req.params;
 
-    const document = await Model.findOneAndDelete(id);
-    if (!document) return next(new ApiError(`document not found.`, 404));
-    res.status(200).json({ message: 'deleted' });
+    const document = await Model.findById(id);
+    if (!document)
+      return next(
+        new ApiError(`${modelName ? modelName : 'document'} not found.`, 404)
+      );
+    res.status(200).json({ status: 'success', data: document });
   });
 
 // create
@@ -36,7 +40,7 @@ export const createHandler = Model =>
   });
 
 // update
-export const updateHandler = Model =>
+export const updateHandler = (Model, modelName) =>
   asyncHandler(async (req, res, next) => {
     const { id } = req.params;
     if (req.body.name) {
@@ -45,17 +49,23 @@ export const updateHandler = Model =>
     const document = await Model.findOneAndUpdate({ _id: id }, req.body, {
       new: true,
     });
-    if (!document) return next(new ApiError(`document not found.`, 404));
+    if (!document)
+      return next(
+        new ApiError(`${modelName ? modelName : 'document'} not found.`, 404)
+      );
 
     res.status(200).json({ data: document });
   });
 
 // delete
-export const deleteHandler = Model =>
+export const deleteHandler = (Model, modelName) =>
   asyncHandler(async (req, res, next) => {
     const { id } = req.params;
 
     const document = await Model.findByIdAndDelete(id);
-    if (!document) return next(new ApiError(`document not found.`, 404));
-    res.status(200).json({ message: 'deleted' });
+    if (!document)
+      return next(
+        new ApiError(`${modelName ? modelName : 'document'} not found.`, 404)
+      );
+    res.status(204).json({ message: 'deleted' });
   });

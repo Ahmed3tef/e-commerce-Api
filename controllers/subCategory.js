@@ -4,24 +4,15 @@ import slugify from 'slugify';
 import asyncHandler from 'express-async-handler';
 import ApiError from '../utils/ApiError.js';
 import { SubCategoryModel } from '../models/subCategory.js';
-import { deleteHandler } from './crud-handlres.js';
+import {
+  createHandler,
+  deleteHandler,
+  getAllHandler,
+  getOneHandler,
+  updateHandler,
+} from './crud-handlres.js';
 
-export const getSubCategories = asyncHandler(async (req, res, next) => {
-  const { categoryId } = req.params;
-  const page = +req.query.page || 1;
-  const limit = +req.query.limit || 5;
-  const skip = (page - 1) * limit;
-
-  let filterObj = {};
-  if (categoryId) filterObj = { category: categoryId };
-
-  const subCategories = await SubCategoryModel.find({ filterObj })
-    .skip(skip)
-    .limit(limit)
-    .populate({ path: 'category', select: 'name' });
-
-  res.status(200).json({ status: 'success', data: subCategories });
-});
+export const getSubCategories = getAllHandler(SubCategoryModel);
 
 export const getCategorySubCategories = asyncHandler(async (req, res, next) => {
   console.log(req.query);
@@ -40,37 +31,10 @@ export const getCategorySubCategories = asyncHandler(async (req, res, next) => {
   res.status(200).json({ status: 'success', data: subCategories });
 });
 
-export const getSubCategory = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const subCategory = await SubCategoryModel.findById(id);
-  if (!subCategory) return next(new ApiError(`subCategory not found.`, 404));
-  res.status(200).json({ data: subCategory });
-});
+export const getSubCategory = getOneHandler(SubCategoryModel, 'SubCategory');
 
-export const createSubCategory = asyncHandler(async (req, res, next) => {
-  const { name, categoryId } = req.body;
+export const createSubCategory = createHandler(SubCategoryModel);
 
-  const subCategory = await SubCategoryModel.create({
-    name,
-    slug: slugify(name),
-    category: categoryId,
-  });
+export const updateSubCategory = updateHandler(SubCategoryModel, 'SubCategory');
 
-  res.status(201).json({ status: 'success', data: subCategory });
-});
-
-export const updateSubCategory = asyncHandler(async (req, res, next) => {
-  const { name } = req.body;
-  const { id } = req.params;
-
-  const subCategory = await SubCategoryModel.findOneAndUpdate(
-    { _id: id },
-    { name, slug: slugify(name) },
-    { new: true }
-  );
-  if (!subCategory) return next(new ApiError(`subCategory not found.`, 404));
-
-  res.status(200).json({ data: subCategory });
-});
-
-export const deleteSubCategory = deleteHandler(SubCategoryModel);
+export const deleteSubCategory = deleteHandler(SubCategoryModel, 'SubCategory');
