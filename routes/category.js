@@ -28,6 +28,11 @@ router
   .patch(updateCategoryValidation, updateCategory)
   .delete(deleteCategoryValidation, deleteCategory);
 
-router.post('/create', createCategoryValidation, createCategory);
+router.post(
+  '/create',
+
+  createCategoryValidation,
+  createCategory
+);
 
 export default router;

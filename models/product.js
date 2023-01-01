@@ -72,4 +72,11 @@ const productSchema = new Schema(
   }
 );
 
+// دي بتتنفذ اول ما الركوست يتبعت للداتا بيز انه عايز داتا ف هو بيعمل بوبيوليت قبل ما يبعت الداتا
+
+productSchema.pre(/^find/, function (next) {
+  this.populate(['category', 'subcategory', 'brand']);
+  next();
+});
+
 export const ProductModel = model('Product', productSchema);

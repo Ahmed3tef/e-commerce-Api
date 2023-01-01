@@ -63,3 +63,25 @@ sort=-price,quantity
 
 '-price,quantity' احنا محتاجين نخلي مفيش كوما و في مسافة بينهم ف هنعمل سبليت و جوين
 
+/////////
+
+upload files
+============
+1- npm i multer 
+
+2- go to any router file and import multer then create an upload middleware from it 
+
+import multer from 'multer';
+
+// define the destination folder for the uploaded files.
+
+const upload = multer({
+  dest: 'uploads/categories',
+});
+بيبص ع الجلوبال وبيعمل الفولدر هناك والجلوبال هو اللي جنب ال app.js
+
+هنروح ع الكرييت ميدلوير و نحطه قبل اي ميدلوير تاني بعد الراوت علي طول 
+
+router.post('/create', upload.single('image'), createCategoryValidation, createCategory);
+
+هنستخدم single لو عنصر واحد و هنستخدم array لو اكتر من عنصر زي array of images علي حسب اللي مبعوت فالفورم داتا
