@@ -10,20 +10,26 @@ import {
 
 import multer from 'multer';
 import ApiError from '../utils/ApiError.js';
+import sharp from 'sharp';
+import asyncHandler from 'express-async-handler';
 
 // create storage configration.
 
-const multerStorage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, '/uploads/categories');
-  },
-  filename: function (req, file, cb) {
-    const ext = file.mimetype.split('/')[1];
-    const fileName = `category-${uuid4}-${Date.now()}.${ext}`;
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    // cb(null, file.fieldname + '-' + uniqueSuffix);
-  },
-});
+// 1- desk storage
+// const multerStorage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, 'uploads/categories');
+//   },
+//   filename: function (req, file, cb) {
+//     const ext = file.mimetype.split('/')[1];
+//     const fileName = `${uuid4()}-${Date.now()}.${ext}`;
+
+//     cb(null, fileName);
+//   },
+// });
+
+// 2- memory storage (makes a buffer)
+const multerStorage = multer.memoryStorage();
 
 const multerFilter = (req, file, cb) => {
   if (file.mimetype.startsWith('image')) {
@@ -39,6 +45,20 @@ const upload = multer({
   fileFilter: multerFilter,
 });
 export const createCategoryImage = upload.single('image');
+
+export const resizeCategoryImage = asyncHandler(async (req, res, next) => {
+  const fileName = `${uuid4()}-${Date.now()}.jpeg`;
+
+  await sharp(req.file.buffer)
+    .resize(600, 600)
+    .toFormat('jpeg')
+    .jpeg({ quality: 95 })
+    .toFile(`uploads/categories/${fileName}`);
+
+  req.body.image = fileName;
+  next();
+});
+
 // get all cats
 export const getCategories = getAllHandler(CategoryModel);
 

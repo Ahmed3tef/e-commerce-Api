@@ -85,3 +85,100 @@ const upload = multer({
 router.post('/create', upload.single('image'), createCategoryValidation, createCategory);
 
 هنستخدم single لو عنصر واحد و هنستخدم array لو اكتر من عنصر زي array of images علي حسب اللي مبعوت فالفورم داتا
+
+and this was the hello world for multer uploading images.
+
+/////////////////
+ودي طريقة حفظ الصور ف السرفر عندي 
+
+const multerStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, '/uploads/categories');
+    الاول هو الايرور والتاني هو الباث اللي هحفظ فيه الداتا اللي جاية ع الميدل وير دي 
+  },
+  filename: function (req, file, cb) {
+    دي الطريقة اللي بعرف بيها الاكستنشن بتاعة الفايل اللي جايلي 
+    const ext = file.mimetype.split('/')[1];
+    const fileName = `category-${uuid4}-${Date.now()}.${ext}`;
+
+    cb(null, fileName);
+  },
+});
+
+طبعا لازم نعمل فلتر للحاجات ا للي جاية عشان انا اكيد مش هقبل كل الملفات اللي هتيجي 
+انا مثلا عايز صور وعايز اكستنشنز معينة بس 
+
+const multerFilter = (req, file, cb) => {
+  هنا انا بشيك ع الصور بس
+  if (file.mimetype.startsWith('image')) {
+    // cb is like next in express, first arg is the error second is response
+    cb(null, true);
+  } else {
+    cb(new ApiError('only images are allowed', 400), false);
+  }
+};
+
+هنا اخير بنكريت الميدلوير اللي هنعمل بيه كل اللي فات دا ونربطهم ببعض
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+export const createCategoryImage = upload.single('image');
+
+ودا اخر حاجة الميثود دي هي اللي بقدر بيها اعمل الهندلة بتاع اللي فات 
+انا هاخد بقا الميدلوير اللي انا عملتها دي وهحطها قبل الميدلويرز التانية اللي عندي ف نفس الباث دا 
+
+/////////
+
+طب لو انا عايز اتحكم ف حجم الصور واخليها اصغر وكدا 
+هنستخدم مكتبة اسمها sharp 
+بنستخدمها مع multer عشان نتحكم ف حاجات كتير ف خصائص الصورة 
+
+الفكرة ف المكتبة دي انها مبتقبلش غير بافرز buffers
+
+1- npm i sharp
+
+2- go to controller file and config your settings:
+
+//  memory storage (makes a buffer)
+const multerStorage = multer.memoryStorage(); 
+دي هترجع الملف علي هيئة بفر ودا هو دورها 
+هي هتخزن الداتا مؤثتا فالميموري اللي هي الرام
+ و بعدين اما نعمل العمليات بتاعتنا هنوديها ع الملف بتاعنا عادي 
+
+const multerFilter = (req, file, cb) => {
+  دي كل دورها انها تشيك  ع نوع الدخل
+  if (file.mimetype.startsWith('image')) {
+    // cb is like next in express, first arg is the error second is response
+    cb(null, true);
+  } else {
+    cb(new ApiError('only images are allowed', 400), false);
+  }
+};
+
+const upload = multer({
+  storage: multerStorage, هنعرف المساحة اللي هخزن فيها هنا 
+  fileFilter: multerFilter,
+});
+export const createCategoryImage = upload.single('image');
+
+export const resizeCategoryImage = asyncHandler(async (req, res, next) => {
+  دا المهم بقا الميدل وير دي 
+  هنحطها بعد الميدل وير بتاعة الابلود ف الترتيب اللي ف الراوتس 
+
+  const fileName = `${uuid4()}-${Date.now()}.jpeg`;
+  انا حاططها هنا jpeg عشان احنا مقررين ان الصور كلها هتكون من النوع دا 
+
+  await sharp(req.file.buffer) هو هنا بياخد بفر والفايل بقا فيه بفر بعد مانا عملته ميموري ستوردج فوق
+    .resize(600, 600) دي بقدر اغير منها ابعاد الصورة وهي بتقص مبتغيرش مساحة وتبوظ الصورة
+    .toFormat('jpeg') دي الفورمات اللي اختارناهالانواع الصور اللي هتكون عندنا 
+    .jpeg({ quality: 95 }) بقوله الصور الجيبج خلي الجودة بتاعتها 95 ف المية
+    .toFile(`uploads/categories/${fileName}`); هنا بقوله يحفظ البفر دا ف الفايل دا لكن فوق كنت بقوله احفظ الملف ف الفولدر لكن هنا انا بمرر الاسم والداتا للملف 
+
+  req.body.image = fileName;
+  بعد كدا بحفظ الصورة ف الركوست بدي عشان تتحط ف الداتا بيز 
+  
+  next();
+});

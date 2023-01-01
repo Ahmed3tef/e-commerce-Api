@@ -1,9 +1,11 @@
 import { Router } from 'express';
 import {
   createCategory,
+  createCategoryImage,
   deleteCategory,
   getCategories,
   getCategory,
+  resizeCategoryImage,
   updateCategory,
 } from '../controllers/category.js';
 
@@ -30,7 +32,8 @@ router
 
 router.post(
   '/create',
-
+  createCategoryImage,
+  resizeCategoryImage,
   createCategoryValidation,
   createCategory
 );
