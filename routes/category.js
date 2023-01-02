@@ -27,7 +27,12 @@ router.get('/', getCategories);
 router
   .route('/one/:id')
   .get(getCategoryValidation, getCategory)
-  .patch(updateCategoryValidation, updateCategory)
+  .patch(
+    createCategoryImage,
+    resizeCategoryImage,
+    updateCategoryValidation,
+    updateCategory
+  )
   .delete(deleteCategoryValidation, deleteCategory);
 
 router.post(

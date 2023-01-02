@@ -1,7 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 // import morgan from 'morgan';
-import mongoose from 'mongoose';
+
 import bodyParser from 'body-parser';
 import ApiError from './utils/ApiError.js';
 import { globalError } from './middlewares/error.js';
@@ -11,6 +11,7 @@ import categoryRoutes from './routes/category.js';
 import subCategoryRoutes from './routes/subCategory.js';
 import brandsRoutes from './routes/brand.js';
 import productsRoutes from './routes/product.js';
+import path from 'path';
 
 dotenv.config({ path: './config.env' });
 
@@ -22,6 +23,9 @@ const app = express();
 
 app.use(bodyParser.json({ limit: '30mb', extended: true }));
 app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }));
+
+// path.resolve() === __dirname in CommonJS
+app.use(express.static(path.join(path.resolve(), 'uploads')));
 
 // env vars
 const PORT = process.env.PORT || 5000;

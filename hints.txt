@@ -179,6 +179,9 @@ export const resizeCategoryImage = asyncHandler(async (req, res, next) => {
 
   req.body.image = fileName;
   بعد كدا بحفظ الصورة ف الركوست بدي عشان تتحط ف الداتا بيز 
-  
+
   next();
 });
+
+// path.resolve() === __dirname in CommonJS
+
