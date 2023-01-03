@@ -22,6 +22,22 @@ const categorySchema = new Schema(
   }
 );
 
+// add url link to our images when getting them from database
+// init doesn't work with create req
+const setImageUrl = doc => {
+  if (doc.image) {
+    const imageUrl = `${process.env.BASE_URL}/${doc.image}`;
+    doc.image = imageUrl;
+  }
+};
+categorySchema.post('init', doc => {
+  setImageUrl(doc);
+});
+
+categorySchema.post('save', doc => {
+  setImageUrl(doc);
+});
+
 // 2- create model by passing the schema to a key named for one doc in collection
 
 export const CategoryModel = model('Category', categorySchema);

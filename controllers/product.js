@@ -1,3 +1,7 @@
+import {
+  refactorAndSaveImage,
+  uploadMultipleImages,
+} from '../middlewares/uploadImages.js';
 import { ProductModel } from '../models/product.js';
 
 import {
@@ -98,6 +102,14 @@ import {
 
 //   res.status(200).json({ status: 'success', data: products });
 // });
+
+export const createProductImage = uploadMultipleImages([
+  { name: 'mainImage', maxCount: 1 },
+  { name: 'images', maxCount: 4 },
+]);
+
+// image processing
+export const resizeProductImage = refactorAndSaveImage('products');
 
 export const getProducts = getAllHandler(ProductModel);
 export const getProduct = getOneHandler(ProductModel);

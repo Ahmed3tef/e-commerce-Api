@@ -17,7 +17,7 @@ import {
 export const createCategoryImage = uploadSingleImage('image');
 
 // image processing
-export const resizeCategoryImage = refactorAndSaveImage();
+export const resizeCategoryImage = refactorAndSaveImage('categories');
 
 // get all cats
 export const getCategories = getAllHandler(CategoryModel);

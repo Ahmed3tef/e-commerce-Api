@@ -23,7 +23,7 @@ export const createSubCategoryValidation = [
       return true;
     }),
 
-  check('categoryId')
+  check('category')
     .notEmpty()
     .withMessage('category id is required.')
     .isMongoId()

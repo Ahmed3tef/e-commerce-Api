@@ -8,9 +8,11 @@ import {
 } from '../utils/validations/product.js';
 import {
   createProduct,
+  createProductImage,
   deleteProduct,
   getProduct,
   getProducts,
+  resizeProductImage,
   updateProduct,
 } from '../controllers/product.js';
 
@@ -21,9 +23,20 @@ router.get('/', getProducts);
 router
   .route('/one/:id')
   .get(getProductValidator, getProduct)
-  .patch(updateProductValidator, updateProduct)
+  .patch(
+    createProductImage,
+    resizeProductImage,
+    updateProductValidator,
+    updateProduct
+  )
   .delete(deleteProductValidator, deleteProduct);
 
-router.post('/create', createProductValidator, createProduct);
+router.post(
+  '/create',
+  createProductImage,
+  resizeProductImage,
+  createProductValidator,
+  createProduct
+);
 
 export default router;

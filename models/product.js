@@ -72,11 +72,34 @@ const productSchema = new Schema(
   }
 );
 
+const setImageUrl = doc => {
+  if (doc.mainImage) {
+    const imageUrl = `${process.env.BASE_URL}/${doc.mainImage}`;
+    doc.mainImage = imageUrl;
+  }
+  if (doc.images) {
+    const imagesList = [];
+
+    doc.images.forEach(image => {
+      imagesList.push(`${process.env.BASE_URL}/${image}`);
+    });
+
+    doc.images = imagesList;
+  }
+};
 // دي بتتنفذ اول ما الركوست يتبعت للداتا بيز انه عايز داتا ف هو بيعمل بوبيوليت قبل ما يبعت الداتا
 
 productSchema.pre(/^find/, function (next) {
   this.populate(['category', 'subcategory', 'brand']);
   next();
+});
+
+productSchema.post('init', doc => {
+  setImageUrl(doc);
+});
+
+productSchema.post('save', doc => {
+  setImageUrl(doc);
 });
 
 export const ProductModel = model('Product', productSchema);

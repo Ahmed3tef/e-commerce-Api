@@ -21,4 +21,18 @@ const brandSchema = new Schema(
   }
 );
 
+const setImageUrl = doc => {
+  if (doc.image) {
+    const imageUrl = `${process.env.BASE_URL}/${doc.image}`;
+    doc.image = imageUrl;
+  }
+};
+brandSchema.post('init', doc => {
+  setImageUrl(doc);
+});
+
+brandSchema.post('save', doc => {
+  setImageUrl(doc);
+});
+
 export const BrandModel = model('brand', brandSchema);

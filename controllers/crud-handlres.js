@@ -2,6 +2,7 @@
 import asyncHandler from 'express-async-handler';
 import ApiError from '../utils/ApiError.js';
 import ApiFeatures from '../utils/ApiFeatures.js';
+import slugify from 'slugify';
 
 // getAll
 export const getAllHandler = (Model, modelName) =>

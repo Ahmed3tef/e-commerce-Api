@@ -1,3 +1,7 @@
+import {
+  refactorAndSaveImage,
+  uploadSingleImage,
+} from '../middlewares/uploadImages.js';
 import { BrandModel } from '../models/brand.js';
 
 import {
@@ -7,6 +11,12 @@ import {
   getOneHandler,
   updateHandler,
 } from './crud-handlres.js';
+
+// upload single image
+export const createBrandImage = uploadSingleImage('image');
+
+// image processing
+export const resizeBrandImage = refactorAndSaveImage('brands');
 
 // get all brends
 export const getBrands = getAllHandler(BrandModel);

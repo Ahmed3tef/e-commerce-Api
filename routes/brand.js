@@ -2,9 +2,11 @@ import { Router } from 'express';
 
 import {
   createBrand,
+  createBrandImage,
   deleteBrand,
   getBrand,
   getBrands,
+  resizeBrandImage,
   updateBrand,
 } from '../controllers/brand.js';
 
@@ -22,9 +24,15 @@ router.get('/', getBrands);
 router
   .route('/one/:id')
   .get(getBrandValidation, getBrand)
-  .patch(updateBrandValidation, updateBrand)
+  .patch(createBrandImage, resizeBrandImage, updateBrandValidation, updateBrand)
   .delete(deleteBrandValidation, deleteBrand);
 
-router.post('/create', createBrandValidation, createBrand);
+router.post(
+  '/create',
+  createBrandImage,
+  resizeBrandImage,
+  createBrandValidation,
+  createBrand
+);
 
 export default router;

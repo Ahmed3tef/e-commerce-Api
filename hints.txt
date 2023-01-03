@@ -185,3 +185,14 @@ export const resizeCategoryImage = asyncHandler(async (req, res, next) => {
 
 // path.resolve() === __dirname in CommonJS
 
+////
+لو هنرفع صورة واحدة هنستخدم 
+upload.single(fileName);
+
+لو هنرفع اكتر من صورة والسكيما بتاعتنا فيها  اراي بس للصور مفيش اي فيلدز تانية هتاخد صور بنستخدم 
+
+upload.array('images'); takes the file name
+
+لو عايزين نرفع بس الركوست بتاعنا فيه اكتر من حاجة فايل لفيلدز مختلفة ف احنا هنستخدم 
+
+upload.fields([{name: 'image', maxCount: 1},{name: 'images', maxCount: 4}]); 
