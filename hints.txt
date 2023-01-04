@@ -196,3 +196,15 @@ upload.array('images'); takes the file name
 لو عايزين نرفع بس الركوست بتاعنا فيه اكتر من حاجة فايل لفيلدز مختلفة ف احنا هنستخدم 
 
 upload.fields([{name: 'image', maxCount: 1},{name: 'images', maxCount: 4}]); 
+
+
+////
+
+Auth 
+===
+
+سكيما اليوزر هيكون ليها 2 كترولر 
+
+1- one to handle the crud operations (only the admin can do this)
+2- to handle Auth (login, signup, forget password, reset password, logout)
+

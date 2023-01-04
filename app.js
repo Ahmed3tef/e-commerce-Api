@@ -11,6 +11,7 @@ import categoryRoutes from './routes/category.js';
 import subCategoryRoutes from './routes/subCategory.js';
 import brandsRoutes from './routes/brand.js';
 import productsRoutes from './routes/product.js';
+import usersRoutes from './routes/user.js';
 import path from 'path';
 
 dotenv.config({ path: './config.env' });
@@ -36,6 +37,7 @@ app.use('/categories', categoryRoutes);
 app.use('/subcategories', subCategoryRoutes);
 app.use('/brands', brandsRoutes);
 app.use('/products', productsRoutes);
+app.use('/users', usersRoutes);
 
 // route doesn't match
 app.all('*', (req, res, next) => {

@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import { renameImage } from '../utils/renameRequestImages.js';
 
 const brandSchema = new Schema(
   {
@@ -21,18 +22,6 @@ const brandSchema = new Schema(
   }
 );
 
-const setImageUrl = doc => {
-  if (doc.image) {
-    const imageUrl = `${process.env.BASE_URL}/${doc.image}`;
-    doc.image = imageUrl;
-  }
-};
-brandSchema.post('init', doc => {
-  setImageUrl(doc);
-});
+renameImage(brandSchema);
 
-brandSchema.post('save', doc => {
-  setImageUrl(doc);
-});
-
-export const BrandModel = model('brand', brandSchema);
+export const BrandModel = model('Brand', brandSchema);
