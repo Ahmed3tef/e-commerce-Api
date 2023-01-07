@@ -15,6 +15,7 @@ import {
   resizeProductImage,
   updateProduct,
 } from '../controllers/product.js';
+import { accessAllowedTo, tokenProtection } from '../controllers/auth.js';
 
 const router = Router();
 
@@ -24,15 +25,24 @@ router
   .route('/one/:id')
   .get(getProductValidator, getProduct)
   .patch(
+    tokenProtection,
+    accessAllowedTo('admin', 'manager'),
     createProductImage,
     resizeProductImage,
     updateProductValidator,
     updateProduct
   )
-  .delete(deleteProductValidator, deleteProduct);
+  .delete(
+    tokenProtection,
+    accessAllowedTo('admin'),
+    deleteProductValidator,
+    deleteProduct
+  );
 
 router.post(
   '/create',
+  tokenProtection,
+  accessAllowedTo('admin', 'manager'),
   createProductImage,
   resizeProductImage,
   createProductValidator,

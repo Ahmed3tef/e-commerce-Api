@@ -6,10 +6,11 @@ import { validationMiddleware } from '../../middlewares/validation.js';
 
 export const createProductValidator = [
   check('name')
+    .notEmpty()
+    .withMessage('Product name is required')
+    .trim()
     .isLength({ min: 3 })
     .withMessage('must be at least 3 chars')
-    .notEmpty()
-    .withMessage('Product required')
     .custom((val, { req }) => {
       req.body.slug = slugify(val);
       return true;
@@ -17,6 +18,7 @@ export const createProductValidator = [
   check('description')
     .notEmpty()
     .withMessage('Product description is required')
+    .trim()
     .isLength({ max: 2000 })
     .withMessage('Too long description'),
   check('quantity')
@@ -59,6 +61,7 @@ export const createProductValidator = [
   check('category')
     .notEmpty()
     .withMessage('Product must be belong to a category')
+    .trim()
     .isMongoId()
     .withMessage('Invalid ID formate')
     .custom(categoryId =>
@@ -73,6 +76,8 @@ export const createProductValidator = [
 
   check('subcategory')
     .notEmpty()
+    .withMessage('subcategory id is required')
+    .trim()
     .isMongoId()
     .withMessage('Invalid ID formate')
     .custom(subcategoryId =>
@@ -99,7 +104,11 @@ export const createProductValidator = [
   //     }
   //   })
   // )
-  check('brand').optional().isMongoId().withMessage('Invalid ID formate'),
+  check('brand')
+    .optional()
+    .trim()
+    .isMongoId()
+    .withMessage('Invalid ID formate'),
   check('ratingsAverage')
     .optional()
     .isNumeric()
@@ -110,6 +119,7 @@ export const createProductValidator = [
     .withMessage('Rating must be below or equal 5.0'),
   check('ratingsQuantity')
     .optional()
+    .trim()
     .isNumeric()
     .withMessage('ratingsQuantity must be a number'),
 
@@ -125,6 +135,7 @@ export const updateProductValidator = [
   check('id').isMongoId().withMessage('Invalid ID formate'),
   body('name')
     .optional()
+    .trim()
     .custom((val, { req }) => {
       req.body.slug = slugify(val);
       return true;

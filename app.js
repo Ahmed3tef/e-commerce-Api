@@ -1,18 +1,19 @@
 import express from 'express';
 import dotenv from 'dotenv';
 // import morgan from 'morgan';
-
 import bodyParser from 'body-parser';
 import ApiError from './utils/ApiError.js';
+import path from 'path';
 import { globalError } from './middlewares/error.js';
 import { dbConnection } from './utils/dbConnection.js';
+
 // routes
 import categoryRoutes from './routes/category.js';
 import subCategoryRoutes from './routes/subCategory.js';
 import brandsRoutes from './routes/brand.js';
 import productsRoutes from './routes/product.js';
 import usersRoutes from './routes/user.js';
-import path from 'path';
+import authRoutes from './routes/auth.js';
 
 dotenv.config({ path: './config.env' });
 
@@ -38,6 +39,7 @@ app.use('/subcategories', subCategoryRoutes);
 app.use('/brands', brandsRoutes);
 app.use('/products', productsRoutes);
 app.use('/users', usersRoutes);
+app.use('/auth', authRoutes);
 
 // route doesn't match
 app.all('*', (req, res, next) => {

@@ -14,6 +14,7 @@ export const createSubCategoryValidation = [
   check('name')
     .notEmpty()
     .withMessage('subCategory name is required.')
+    .trim()
     .isLength({ min: 3 })
     .withMessage('name is too short')
     .isLength({ max: 30 })
@@ -26,6 +27,7 @@ export const createSubCategoryValidation = [
   check('category')
     .notEmpty()
     .withMessage('category id is required.')
+    .trim()
     .isMongoId()
     .withMessage('category id is required.'),
   validationMiddleware,

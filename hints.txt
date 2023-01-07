@@ -208,3 +208,45 @@ Auth
 1- one to handle the crud operations (only the admin can do this)
 2- to handle Auth (login, signup, forget password, reset password, logout)
 
+///
+
+hash password 
+
+// this hashes the password before saving it to database.
+// we must use function declaration to use this keyword.
+
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+
+  this.password = await bcrypt.hash(this.password, 12);
+  next();
+});
+
+/// 
+
+لما هتعمل ابديت لبيانات اليوزر هتفصل ابديت الداتا عن ابديت الباسورد 
+
+شوف الفاليديشن و الراوتس بتاعة اليوزر والباسورد 
+
+////
+
+AUTH WITH JWT
+
+1- المفروض السيكرت ف كل مشروع يكون مختلف عن اللي قبله 
+2- المفروض طول السيكرت دا ميقلش عن 30 حرف 
+3- هتحدد الاكسبيرشن بتاع التوكن ف الكونفج بردو 
+
+دي طريقة صنع التوكن 
+ const token = jwt.sign(
+    {
+      id: user._id,
+       لاوزم بديله الاي دي بتاع اليوزر 
+    },
+    process.env.JWT_SECRET, 
+    بديله سيكرت كي لازم 
+    {
+      expiresIn: process.env.JWT_SECRET_EXPIRATION, 
+      ودا اوبشنال وهنا بديله تايم لانتهاء التوكن
+
+    }
+  );

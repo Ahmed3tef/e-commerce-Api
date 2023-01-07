@@ -47,7 +47,7 @@ export const updateHandler = (Model, modelName) =>
     if (req.body.name) {
       req.body.slug = slugify(req.body.name);
     }
-    const document = await Model.findOneAndUpdate({ _id: id }, req.body, {
+    const document = await Model.findByIdAndUpdate(id, req.body, {
       new: true,
     });
     if (!document)

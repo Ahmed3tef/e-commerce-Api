@@ -1,16 +1,5 @@
 import fs from 'fs';
-export const globalError = (err, req, res, next) => {
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || 'error';
-
-  if (req.file)
-    fs.unlink(req.file.path, err => {
-      console.log(err);
-    });
-
-  if (process.env.NODE_ENV === 'development') return errorForDev(err, res);
-  errorForProd(err, res);
-};
+import ApiError from '../utils/ApiError.js';
 
 // شكل الايرور اللي عايزه يرجع ف الرسبونس لو انا شغال ف الديفلوبمنت كباك
 const errorForDev = (err, res) => {
@@ -29,4 +18,26 @@ const errorForProd = (err, res) => {
     status: err.status,
     message: err.message,
   });
+};
+
+const handleTokenInvalid = () =>
+  new ApiError('Invalid token, please login and try again', 401);
+
+const handleTokenExpired = () =>
+  new ApiError('Token expired, please login and try again', 401);
+
+export const globalError = (err, req, res, next) => {
+  err.statusCode = err.statusCode || 500;
+  err.status = err.status || 'error';
+
+  if (err.name === 'JsonWebTokenError') err = handleTokenInvalid();
+  if (err.name === 'TokenExpiredError') err = handleTokenExpired();
+
+  if (req.file)
+    fs.unlink(req.file.path, err => {
+      console.log(err);
+    });
+
+  if (process.env.NODE_ENV === 'development') return errorForDev(err, res);
+  errorForProd(err, res);
 };

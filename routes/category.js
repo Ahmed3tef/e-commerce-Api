@@ -17,6 +17,7 @@ import {
 } from '../utils/validations/category.js';
 
 import subCategoryRoutes from './subCategory.js';
+import { accessAllowedTo, tokenProtection } from '../controllers/auth.js';
 
 const router = Router();
 
@@ -28,15 +29,24 @@ router
   .route('/one/:id')
   .get(getCategoryValidation, getCategory)
   .patch(
+    tokenProtection,
+    accessAllowedTo('admin', 'manager'),
     createCategoryImage,
     resizeCategoryImage,
     updateCategoryValidation,
     updateCategory
   )
-  .delete(deleteCategoryValidation, deleteCategory);
+  .delete(
+    tokenProtection,
+    accessAllowedTo('admin'), // only admin can delete
+    deleteCategoryValidation,
+    deleteCategory
+  );
 
 router.post(
   '/create',
+  tokenProtection,
+  accessAllowedTo('admin', 'manager'),
   createCategoryImage,
   resizeCategoryImage,
   createCategoryValidation,
