@@ -29,6 +29,9 @@ const userSchema = new Schema(
       min: [6, 'Too short password'],
     },
     passwordChangedAt: Date,
+    passwordResetCode: String,
+    passwordResetCodeExpiresAt: Date,
+    passwordResetCodeVerified: Boolean,
     role: {
       type: String,
       enum: ['user', 'admin'],

@@ -250,3 +250,10 @@ AUTH WITH JWT
 
     }
   );
+
+/////
+
+forget password cycle: 
+1- send reset code to email you get from req.body
+2- verify the code that was sent to email. 
+3- set the new password.

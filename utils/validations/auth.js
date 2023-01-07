@@ -65,3 +65,14 @@ export const loginValidation = [
     .withMessage('Password must be at least 6 characters'),
   validationMiddleware,
 ];
+
+export const forgotPasswordValidation = [
+  check('email')
+    .notEmpty()
+    .withMessage('Email required')
+    .trim()
+    .isEmail()
+    .withMessage('Invalid email address'),
+
+  validationMiddleware,
+];

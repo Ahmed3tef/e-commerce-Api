@@ -4,7 +4,7 @@ import { UserModel } from '../models/user.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
-const expiresInSecondes = process.env.JWT_SECRET_EXPIRATION;
+// const expiresInSecondes = process.env.JWT_SECRET_EXPIRATION;
 
 const createToken = id =>
   jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -92,3 +92,25 @@ export const accessAllowedTo = (...roles) =>
 
     next();
   });
+
+export const forgotPassword = asyncHandler(async (req, res, next) => {
+  // 1) get user by email
+  const user = await UserModel.findOne({ email: req.body.email });
+  if (!user)
+    return next(
+      new ApiError(`There is no user with this email ${req.body.email}`, 404)
+    );
+
+  // 2) if user exists, create reset code random 6 digits and send it to email, save the hashed one in db
+
+  // 1- generate random 6 numbers and hashing it.
+  const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+  const resetCodeHashed = await bcrypt.hash(resetCode, 6);
+
+  // 2- add the reset code to db and its expiration time.
+  user.passwordResetCode = resetCodeHashed;
+  // expires after (10 min)
+  user.passwordResetCodeExpiresAt = Date.now() + 10 * 60 * 1000;
+  user.passwordResetCodeVerified = false;
+  await user.save();
+});
