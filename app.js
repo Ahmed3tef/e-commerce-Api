@@ -12,8 +12,10 @@ import categoryRoutes from './routes/category.js';
 import subCategoryRoutes from './routes/subCategory.js';
 import brandsRoutes from './routes/brand.js';
 import productsRoutes from './routes/product.js';
-import usersRoutes from './routes/user.js';
+import usersRoutes from './routes/users.js';
+import userInfoRoutes from './routes/userInfo.js';
 import authRoutes from './routes/auth.js';
+import reviewsRoutes from './routes/review.js';
 
 dotenv.config({ path: './config.env' });
 
@@ -34,12 +36,16 @@ const PORT = process.env.PORT || 5000;
 
 // app routes
 
+app.use('/auth', authRoutes);
 app.use('/categories', categoryRoutes);
 app.use('/subcategories', subCategoryRoutes);
 app.use('/brands', brandsRoutes);
 app.use('/products', productsRoutes);
+// user info for admin
 app.use('/users', usersRoutes);
-app.use('/auth', authRoutes);
+// user info for user
+app.use('/user', userInfoRoutes);
+app.use('/reviews', reviewsRoutes);
 
 // route doesn't match
 app.all('*', (req, res, next) => {

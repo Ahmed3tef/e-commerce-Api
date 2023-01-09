@@ -54,6 +54,11 @@ userSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, 12);
   next();
 });
-
+// قبل كل ركوستات الفايند
+// userSchema.pre(/^find/, function (next) {
+//   // this.populate(['category', 'subcategory', 'brand']);
+//   this.select('-__v -password');
+//   next();
+// });
 renameImage(userSchema);
 export const UserModel = model('User', userSchema);

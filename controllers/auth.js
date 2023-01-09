@@ -4,13 +4,9 @@ import { UserModel } from '../models/user.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { sendEmail } from '../utils/sendEmail.js';
+import { createToken } from '../utils/createToken.js';
 
 // const expiresInSecondes = process.env.JWT_SECRET_EXPIRATION;
-
-const createToken = id =>
-  jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_SECRET_EXPIRATION,
-  });
 
 export const signup = asyncHandler(async (req, res, next) => {
   // 1- create user
@@ -48,9 +44,9 @@ export const login = asyncHandler(async (req, res, next) => {
 export const tokenProtection = asyncHandler(async (req, res, next) => {
   // 1) check if token exists.
   // - we must check if there is a Barer or not to take the right token.
-  let token;
+
   const headersAuth = req.headers.authorization.split(' ');
-  token = headersAuth.length === 1 ? headersAuth[0] : headersAuth[1]; // 'bearer tokenCode' so we get only code
+  const token = headersAuth.length === 1 ? headersAuth[0] : headersAuth[1]; // 'bearer tokenCode' so we get only code
 
   if (!token)
     return next(
@@ -80,6 +76,13 @@ export const tokenProtection = asyncHandler(async (req, res, next) => {
         )
       );
   }
+  if (user.active === false)
+    return next(
+      new ApiError(
+        'Account has been deactivated, please activate your account to login.',
+        401
+      )
+    );
   req.user = user;
   next();
 });
