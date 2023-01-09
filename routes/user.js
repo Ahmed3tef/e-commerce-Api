@@ -34,23 +34,17 @@ router.patch(
   updateUserPassword
 );
 
+// gate middleware to access the ones after it بدل ما اكتبهم ف كل واحدة فيهم
+router.use(tokenProtection, accessAllowedTo('admin'));
+
 router
   .route('/one/:id')
   .get(tokenProtection, accessAllowedTo('admin'), getUserValidation, getUser)
-  .patch(
-    tokenProtection,
-    accessAllowedTo('admin'),
-    createUserImage,
-    resizeUserImage,
-    updateUserValidation,
-    updateUser
-  )
-  .delete(tokenProtection, accessAllowedTo('admin'), deleteUser);
+  .patch(createUserImage, resizeUserImage, updateUserValidation, updateUser)
+  .delete(deleteUser);
 
 router.post(
   '/create',
-  tokenProtection,
-  accessAllowedTo('admin'),
   createUserImage,
   createUserValidation,
   resizeUserImage,

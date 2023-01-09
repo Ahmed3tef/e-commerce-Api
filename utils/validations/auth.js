@@ -76,3 +76,47 @@ export const forgotPasswordValidation = [
 
   validationMiddleware,
 ];
+
+export const verifyCodeValidation = [
+  check('email')
+    .notEmpty()
+    .withMessage('Email required')
+    .trim()
+    .isEmail()
+    .withMessage('Invalid email address'),
+  check('resetCode')
+    .trim()
+    .notEmpty()
+    .withMessage('resetCode required')
+    .isLength({ min: 6, max: 6 })
+    .withMessage('ResetCode must be 6 characters.'),
+
+  validationMiddleware,
+];
+
+export const resetPasswordValidation = [
+  check('email')
+    .notEmpty()
+    .withMessage('Email required')
+    .trim()
+    .isEmail()
+    .withMessage('Invalid email address'),
+  check('passwordConfirm')
+    .trim()
+    .notEmpty()
+    .withMessage('Password confirmation required'),
+  check('password')
+    .notEmpty()
+    .withMessage('Password required')
+    .trim()
+    .isLength({ min: 6 })
+    .withMessage('Password must be at least 6 characters')
+    .custom((password, { req }) => {
+      if (password !== req.body.passwordConfirm) {
+        throw new Error('Password Confirmation incorrect');
+      }
+      return true;
+    }),
+
+  validationMiddleware,
+];

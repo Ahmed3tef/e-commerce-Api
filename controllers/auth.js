@@ -3,6 +3,7 @@ import ApiError from '../utils/ApiError.js';
 import { UserModel } from '../models/user.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import { sendEmail } from '../utils/sendEmail.js';
 
 // const expiresInSecondes = process.env.JWT_SECRET_EXPIRATION;
 
@@ -50,7 +51,7 @@ export const tokenProtection = asyncHandler(async (req, res, next) => {
   let token;
   const headersAuth = req.headers.authorization.split(' ');
   token = headersAuth.length === 1 ? headersAuth[0] : headersAuth[1]; // 'bearer tokenCode' so we get only code
-  console.log(token);
+
   if (!token)
     return next(
       new ApiError('You are not logged in, please login first.', 401)
@@ -113,4 +114,73 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
   user.passwordResetCodeExpiresAt = Date.now() + 10 * 60 * 1000;
   user.passwordResetCodeVerified = false;
   await user.save();
+
+  // 3) send the reset code to the user by email.
+  const message = `Hi ${user.name}, \n your reset code for E-shop is ${resetCode}.`;
+
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: 'Reset your password code (valid for 5 min).',
+      message,
+    });
+  } catch (error) {
+    user.passwordResetCode = undefined;
+    user.passwordResetCodeExpiresAt = undefined;
+    user.passwordResetCodeVerified = undefined;
+    await user.save();
+    return next(new ApiError('some error occurred in sending email'));
+  }
+  res
+    .status(200)
+    .json({ status: 'success', message: 'Reset code was sent to email.' });
+});
+
+export const verifyResetCode = asyncHandler(async (req, res, next) => {
+  const { resetCode, email } = req.body;
+  const user = await UserModel.findOne({ email });
+
+  if (!user) return next(new ApiError('user not found', 404));
+
+  const codeIsCorrect = bcrypt.compare(resetCode, user.passwordResetCode);
+  const codeIsExpired = user.passwordResetCodeExpiresAt < Date.now();
+
+  if (!codeIsCorrect || codeIsExpired)
+    return next(new ApiError('Reset code is invalid or expired.', 400));
+
+  user.passwordResetCodeVerified = true;
+  await user.save();
+
+  res.status(200).json({ status: 'success', message: 'Reset code verified' });
+});
+
+export const resetPassword = asyncHandler(async (req, res, next) => {
+  const { email, password } = req.body;
+  // get user
+  const user = await UserModel.findOne({ email });
+  if (!user) return next(new ApiError('user not found', 404));
+
+  // check resetCode is verified
+  if (!user.passwordResetCodeVerified)
+    return next(new ApiError('Reset code not verified.', 400));
+
+  // check password not equal to current
+  const passwordIsOld = bcrypt.compareSync(password, user.password);
+
+  if (passwordIsOld)
+    return next(new ApiError('please enter a new password value', 400));
+
+  // if pass is correct and is new:
+  // 1- add the new password to user after bcrypt is applied.
+  // 2- set passwordResetCode, passwordResetCodeExpiresAt, passwordResetCodeVerified to undefined.
+  // 3- generate new token.
+
+  user.password = password;
+  user.passwordResetCode = undefined;
+  user.passwordResetCodeExpiresAt = undefined;
+  user.passwordResetCodeVerified = undefined;
+  await user.save();
+
+  const token = createToken(user._id);
+  res.status(200).json({ token });
 });

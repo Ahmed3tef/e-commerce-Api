@@ -257,3 +257,14 @@ forget password cycle:
 1- send reset code to email you get from req.body
 2- verify the code that was sent to email. 
 3- set the new password.
+
+
+////
+
+send emails using nodemailer
+
+1- npm i nodemailer 
+
+
+
+to use gmail we need to make it less secure app.
