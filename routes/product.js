@@ -17,9 +17,13 @@ import {
 } from '../controllers/product.js';
 import { accessAllowedTo, tokenProtection } from '../controllers/auth.js';
 
+import reviewRoutes from './review.js';
+
 const router = Router();
 
 router.get('/', getProducts);
+
+router.get('/:ProductId/reviews', reviewRoutes);
 
 router
   .route('/one/:id')
