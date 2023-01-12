@@ -112,7 +112,7 @@ export const createProductImage = uploadMultipleImages([
 export const resizeProductImage = refactorAndSaveImage('products');
 
 export const getProducts = getAllHandler(ProductModel);
-export const getProduct = getOneHandler(ProductModel);
+export const getProduct = getOneHandler(ProductModel, 'Product', 'reviews');
 
 export const createProduct = createHandler(ProductModel, 'Product');
 

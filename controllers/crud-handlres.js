@@ -20,11 +20,16 @@ export const getAllHandler = (Model, modelName) =>
   });
 
 // getOne
-export const getOneHandler = (Model, modelName) =>
+export const getOneHandler = (Model, modelName, populateOptions) =>
   asyncHandler(async (req, res, next) => {
     const { id } = req.params;
 
-    const document = await Model.findById(id);
+    let query = Model.findById(id);
+
+    if (populateOptions) {
+      query = query.populate([populateOptions]);
+    }
+    const document = await query;
     if (!document)
       return next(
         new ApiError(`${modelName ? modelName : 'document'} not found.`, 404)
@@ -68,5 +73,8 @@ export const deleteHandler = (Model, modelName) =>
       return next(
         new ApiError(`${modelName ? modelName : 'document'} not found.`, 404)
       );
-    res.status(204).json({ message: 'deleted' });
+    res.status(204).json({
+      status: 'success',
+      message: `${modelName ? modelName : 'document'} deleted`,
+    });
   });

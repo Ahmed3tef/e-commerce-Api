@@ -1,12 +1,5 @@
 import { Router } from 'express';
 
-import {
-  createBrandValidation,
-  deleteBrandValidation,
-  getBrandValidation,
-  updateBrandValidation,
-} from '../utils/validations/brand.js';
-
 import { accessAllowedTo, tokenProtection } from '../controllers/auth.js';
 
 import {
@@ -17,6 +10,13 @@ import {
   updateReview,
 } from '../controllers/review.js';
 
+import {
+  createReviewValidation,
+  deleteReviewValidation,
+  getReviewValidation,
+  updateReviewValidation,
+} from '../utils/validations/review.js';
+
 const router = Router();
 
 router.get('/', getReviews);
@@ -25,10 +25,19 @@ router.use(tokenProtection);
 
 router
   .route('/one/:id')
-  .get(getReview)
-  .patch(accessAllowedTo('user'), updateReview)
-  .delete(accessAllowedTo('admin'), deleteReview);
+  .get(getReviewValidation, getReview)
+  .patch(accessAllowedTo('user'), updateReviewValidation, updateReview)
+  .delete(
+    accessAllowedTo('admin', 'user'),
+    deleteReviewValidation,
+    deleteReview
+  );
 
-router.post('/create', accessAllowedTo('user'), createReview);
+router.post(
+  '/create',
+  accessAllowedTo('user'),
+  createReviewValidation,
+  createReview
+);
 
 export default router;

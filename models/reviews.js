@@ -2,14 +2,14 @@ import { Schema, model } from 'mongoose';
 
 const reviewSchema = new Schema(
   {
+    title: {
+      type: String,
+      maxlength: [60, 'Too long name'],
+    },
     comment: {
       type: String,
       minlength: [10, 'Too short name'],
       maxlength: [200, 'Too long name'],
-    },
-    title: {
-      type: String,
-      maxlength: [60, 'Too long name'],
     },
     rating: {
       type: Number,
@@ -33,5 +33,10 @@ const reviewSchema = new Schema(
     timestamps: true,
   }
 );
+
+reviewSchema.pre(/^find/, function (next) {
+  this.populate({ path: 'user', select: 'name email phone' });
+  next();
+});
 
 export const ReviewModel = model('Review', reviewSchema);
