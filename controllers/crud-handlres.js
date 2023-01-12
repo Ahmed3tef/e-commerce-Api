@@ -7,7 +7,9 @@ import slugify from 'slugify';
 // getAll
 export const getAllHandler = (Model, modelName) =>
   asyncHandler(async (req, res, next) => {
-    const apiFeatures = new ApiFeatures(Model.find(), req.query)
+    let filter = {};
+    if (req.filterObj) filter = req.filterObj;
+    const apiFeatures = new ApiFeatures(Model.find(filter), req.query)
       .paginate()
       .sort()
       .search()

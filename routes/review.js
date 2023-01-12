@@ -8,6 +8,8 @@ import {
   getReview,
   getReviews,
   updateReview,
+  setProductIdAndUserId,
+  createFilterObjForNested,
 } from '../controllers/review.js';
 
 import {
@@ -17,9 +19,10 @@ import {
   updateReviewValidation,
 } from '../utils/validations/review.js';
 
-const router = Router();
+const router = Router({ mergeParams: true });
+// الحاجات اللي جاية علي النستد راوت من  البرودكت هتعدي ف المين راوت بتاع ال getall ف هنحط قبله ميدلوير عشان نشوف لو في productId ولا لا
 
-router.get('/', getReviews);
+router.get('/', createFilterObjForNested, getReviews);
 
 router.use(tokenProtection);
 
@@ -36,6 +39,7 @@ router
 router.post(
   '/create',
   accessAllowedTo('user'),
+  setProductIdAndUserId,
   createReviewValidation,
   createReview
 );

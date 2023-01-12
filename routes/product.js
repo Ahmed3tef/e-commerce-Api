@@ -21,9 +21,12 @@ import reviewRoutes from './review.js';
 
 const router = Router();
 
-router.get('/', getProducts);
+// POST /products/1L2J3NK1J2N3KJ12/reviews
+// GET /products/1L2J3NK1J2N3KJ12/reviews
+// GET /products/1L2J3NK1J2N3KJ12/reviews/2j3n4kj2n3k4j
+router.use('/:productId/reviews', reviewRoutes);
 
-router.get('/:ProductId/reviews', reviewRoutes);
+router.get('/', getProducts);
 
 router
   .route('/one/:id')
