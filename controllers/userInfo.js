@@ -6,7 +6,7 @@ import {
 import { UserModel } from '../models/user.js';
 import ApiError from '../utils/ApiError.js';
 
-import { getOneHandler } from './crud-handlres.js';
+import { getOneHandler } from './crud-handlers.js';
 import asyncHandler from 'express-async-handler';
 import bcrypt from 'bcryptjs';
 

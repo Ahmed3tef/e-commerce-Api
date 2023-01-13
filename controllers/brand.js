@@ -10,7 +10,7 @@ import {
   getAllHandler,
   getOneHandler,
   updateHandler,
-} from './crud-handlres.js';
+} from './crud-handlers.js';
 
 // upload single image
 export const createBrandImage = uploadSingleImage('image');

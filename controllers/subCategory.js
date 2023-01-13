@@ -10,7 +10,7 @@ import {
   getAllHandler,
   getOneHandler,
   updateHandler,
-} from './crud-handlres.js';
+} from './crud-handlers.js';
 
 export const getSubCategories = getAllHandler(SubCategoryModel);
 

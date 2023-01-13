@@ -23,14 +23,14 @@ export const removeAddress = asyncHandler(async (req, res, next) => {
   const user = await UserModel.findByIdAndUpdate(
     req.user._id,
     {
-      $pull: { addresses: req.params.addressId },
+      $pull: { addresses: { _id: req.params.addressId } },
     },
     { new: true }
   );
 
   res.status(200).json({
     status: 'success',
-    message: 'address successfully removed to your addresses.',
+    message: 'address successfully removed from your addresses.',
     data: user.addresses,
   });
 });

@@ -1,5 +1,6 @@
 import { check } from 'express-validator';
 import { validationMiddleware } from '../../middlewares/validation.js';
+import { UserModel } from '../../models/user.js';
 
 export const createAddressValidation = [
   check('alias')
@@ -8,7 +9,23 @@ export const createAddressValidation = [
     .isLength({ min: 2 })
     .withMessage('alias is too short')
     .isLength({ max: 40 })
-    .withMessage('alias is too long.'),
+    .withMessage('alias is too long.')
+    .custom(async (val, { req }) => {
+      // Validate the address alias.
+      const userAddresses = await UserModel.findById(req.user._id).select(
+        'addresses'
+      );
+      if (userAddresses.addresses) {
+        const aliasFound = userAddresses.addresses.find(
+          address => val.toLowerCase() === address.alias.toLowerCase()
+        );
+        if (aliasFound)
+          throw new Error(
+            'This alias was added before, please enter another value'
+          );
+      }
+      return true;
+    }),
 
   check('city')
     .notEmpty()

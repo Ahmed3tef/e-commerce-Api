@@ -5,7 +5,7 @@ import {
   getAllHandler,
   getOneHandler,
   updateHandler,
-} from './crud-handlres.js';
+} from './crud-handlers.js';
 
 // nested route
 // GET products/:productId/reviews/

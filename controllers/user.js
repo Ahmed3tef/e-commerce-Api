@@ -10,7 +10,7 @@ import {
   deleteHandler,
   getAllHandler,
   getOneHandler,
-} from './crud-handlres.js';
+} from './crud-handlers.js';
 import asyncHandler from 'express-async-handler';
 import bcrypt from 'bcryptjs';
 // upload single image

@@ -10,7 +10,7 @@ import {
   getAllHandler,
   getOneHandler,
   updateHandler,
-} from './crud-handlres.js';
+} from './crud-handlers.js';
 
 // export const getProducts = asyncHandler(async (req, res, next) => {
 //   // // 1- filtering
