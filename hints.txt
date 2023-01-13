@@ -265,6 +265,66 @@ send emails using nodemailer
 
 1- npm i nodemailer 
 
+use mailTrap to send emails.
+
+//////////
+
+to make average rating and rating quantity we will use aggrigate()
+
+1- اول حاجة هنعمل الفنكشن اللي هتعملنا اللوجك دا وهنستخدم فيها اجريجيت وهتكون بالشكل دا 
+
+reviewSchema.statics.createAverageRatingAndQuantity = async function (
+  productId
+) {
+  // اجريجيت دي شغالة علي انها بتدخل النتايج بتاعتنا علي اكتر من مرحلة ورا بعض بالترتيب وكل مرحلة بتاخد النتيجة بتاعة المرحلة اللي قبلها وبتعمل عليها العمليات بتاعتها وهكذا
+
+  const result = await this.aggregate([
+    // stage 1 : get all reviews in specific product
+    { $match: { product: productId } },
+    // stage 2 : group reviews in based on specific product and calc avgRating and ratingQuantity
+    {
+      $group: {
+        _id: 'product',
+        averageRating: { $avg: '$rating' },
+        ratingsQuantity: { $sum: 1 },
+      },
+    },
+  ]);
+  if (result.length > 0) {
+    await ProductModel.findByIdAndUpdate(productId, {
+      avgRating: result[0].averageRating,
+      ratings: result[0].ratingsQuantity,
+    });
+  } 
+};
+
+بعد كدا بنقول قبل ما نحفظ الداتا ف احنا هنعمل الكلام دا 
+
+reviewSchema.post('save', async function (next) {
+  // بمرر ال productId اللي موجود ف الريفيو نفسه بتاع البرودكت
+  await this.constructor.createAverageRatingAndQuantity(this.product);
+  
+});
 
 
-to use gmail we need to make it less secure app.
+2- هنعمل العمليات دي قبل ما نحفظ الداتا ف الداتابيز وهنمرر ال productId من الريفيو مودل نفسه 
+
+reviewSchema.post('save', async function (next) {
+  // بمرر ال productId اللي موجود ف الريفيو نفسه بتاع البرودكت 
+  await this.constructor.createAverageRatingAndQuantity(this.product);
+ 
+});
+
+
+3- عايزين نعمل كدا لما نعمل ابديت .. للاسف مفيش حاجة بتعمل لسن علي الابديت ف احنا هنروح نعمل 
+document.save()
+ف الفنكشن اللي بنعمل فيها ابديت قبل ما نعمل الريترن وبكدا هنبقا عملنا ترجر علي الابديت 
+
+
+4- عايزين نعمل كدا بردو لو اي يوزر مسح ريفيو
+
+reviewSchema.post('remove', async function (next) {
+  // بمرر ال productId اللي موجود ف الريفيو نفسه بتاع البرودكت
+  await this.constructor.createAverageRatingAndQuantity(this.product);
+
+});

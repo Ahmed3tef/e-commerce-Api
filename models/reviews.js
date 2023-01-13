@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-
+import { ProductModel } from './product.js';
 const reviewSchema = new Schema(
   {
     title: {
@@ -37,6 +37,48 @@ const reviewSchema = new Schema(
 reviewSchema.pre(/^find/, function (next) {
   this.populate({ path: 'user', select: 'name email phone' });
   next();
+});
+
+reviewSchema.statics.createAverageRatingAndQuantity = async function (
+  productId
+) {
+  // اجريجيت دي شغالة علي انها بتدخل النتايج بتاعتنا علي اكتر من مرحلة ورا بعض بالترتيب وكل مرحلة بتاخد النتيجة بتاعة المرحلة اللي قبلها وبتعمل عليها العمليات بتاعتها وهكذا
+
+  const result = await this.aggregate([
+    // stage 1 : get all reviews in specific product
+    { $match: { product: productId } },
+    // stage 2 : group reviews in based on specific product and calc avgRating and ratingQuantity
+    {
+      $group: {
+        _id: 'product',
+        averageRating: { $avg: '$rating' },
+        ratingsQuantity: { $sum: 1 },
+      },
+    },
+  ]);
+  if (result.length > 0) {
+    await ProductModel.findByIdAndUpdate(productId, {
+      avgRating: result[0].averageRating,
+      ratings: result[0].ratingsQuantity,
+    });
+  }
+  // else {
+  //   await ProductModel.findByIdAndUpdate(productId, {
+  //     avgRating: 0,
+  //     ratings: 0,
+  //   });
+  // }
+};
+
+reviewSchema.post('save', async function (next) {
+  // بمرر ال productId اللي موجود ف الريفيو نفسه بتاع البرودكت
+  await this.constructor.createAverageRatingAndQuantity(this.product);
+  // next();
+});
+reviewSchema.post('remove', async function (next) {
+  // بمرر ال productId اللي موجود ف الريفيو نفسه بتاع البرودكت
+  await this.constructor.createAverageRatingAndQuantity(this.product);
+  // next();
 });
 
 export const ReviewModel = model('Review', reviewSchema);

@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose';
 import { renameImage } from '../utils/renameRequestImages.js';
 import bcrypt from 'bcryptjs';
+
 const userSchema = new Schema(
   {
     name: {
@@ -41,6 +42,35 @@ const userSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    wishlist: [
+      {
+        type: Schema.ObjectId,
+        ref: 'Product',
+      },
+    ],
+    // بدل ما نعمل سكيما ليه دي طريقة عشان نعمل الاوبجكت والسكيما بتاعته جوا سكيما تانية
+    addresses: [
+      {
+        id: { type: Schema.Types.ObjectId },
+        alias: {
+          type: String,
+          unique: [true, 'Alias must be unique'],
+        },
+        city: {
+          type: String,
+          required: [true, 'city is required.'],
+        },
+        government: {
+          type: String,
+          required: [true, 'government is required.'],
+        },
+        phone: {
+          type: String,
+          required: [true, 'phone is required.'],
+        },
+        details: String,
+      },
+    ],
   },
   {
     timestamps: true,

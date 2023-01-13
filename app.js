@@ -16,6 +16,8 @@ import usersRoutes from './routes/users.js';
 import userInfoRoutes from './routes/userInfo.js';
 import authRoutes from './routes/auth.js';
 import reviewsRoutes from './routes/review.js';
+import wishlistRoutes from './routes/wishlist.js';
+import addressRoutes from './routes/address.js';
 
 dotenv.config({ path: './config.env' });
 
@@ -46,6 +48,8 @@ app.use('/users', usersRoutes);
 // user info for user
 app.use('/user', userInfoRoutes);
 app.use('/reviews', reviewsRoutes);
+app.use('/wishlist', wishlistRoutes);
+app.use('/address', addressRoutes);
 
 // route doesn't match
 app.all('*', (req, res, next) => {

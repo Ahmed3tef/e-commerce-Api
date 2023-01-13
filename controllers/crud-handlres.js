@@ -62,6 +62,9 @@ export const updateHandler = (Model, modelName) =>
         new ApiError(`${modelName ? modelName : 'document'} not found.`, 404)
       );
 
+    // Trigger "save" event when update document (this is for calc reviews)
+    document.save();
+
     res.status(200).json({ data: document });
   });
 
@@ -75,6 +78,10 @@ export const deleteHandler = (Model, modelName) =>
       return next(
         new ApiError(`${modelName ? modelName : 'document'} not found.`, 404)
       );
+
+    // Trigger "remove" event when update document
+    document.remove();
+
     res.status(204).json({
       status: 'success',
       message: `${modelName ? modelName : 'document'} deleted`,
