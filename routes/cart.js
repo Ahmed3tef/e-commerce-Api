@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { accessAllowedTo, tokenProtection } from '../controllers/auth.js';
-import { addToCart } from '../controllers/cart.js';
+import { addToCart,applyCoupon,updateCartItemQuantity } from '../controllers/cart.js';
 
 const router = Router();
 
@@ -15,5 +15,6 @@ router.route('/').post(addToCart);
 //   productWishlistValidation,
 //   removeProductFromWishlist
 // );
-
+router.patch('/applyCoupon', applyCoupon);
+router.patch('/:itemId', updateCartItemQuantity);
 export default router;
