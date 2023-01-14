@@ -13,14 +13,17 @@ const cartSchema = new Schema(
           type: Schema.ObjectId,
           ref: 'Product',
         },
-        quantity: Number,
+        quantity: {
+          type: Number,
+          default: 1,
+        },
         variant: String,
         price: Number,
       },
     ],
-
     totalPrice: Number,
     totalPriceAfterDiscount: Number,
+    totalQuantity: Number,
   },
   {
     timestamps: true,
