@@ -5,6 +5,8 @@ import {
   clearCart,
   getUserCart,
   removeCartItem,
+  applyCoupon,
+  updateCartItemQuantity,
 } from '../controllers/cart.js';
 
 const router = Router();
@@ -13,6 +15,7 @@ const router = Router();
 router.use(tokenProtection, accessAllowedTo('user'));
 
 router.route('/').post(addToCart).get(getUserCart).delete(clearCart);
-router.route('/:itemId').delete(removeCartItem);
+router.route('/:itemId').delete(removeCartItem).patch(updateCartItemQuantity);
+router.patch('/applyCoupon', applyCoupon);
 
 export default router;
