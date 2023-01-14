@@ -1,6 +1,18 @@
 import asyncHandler from 'express-async-handler';
 import { CartModel } from '../models/cart.js';
 import { ProductModel } from '../models/product.js';
+import ApiError from '../utils/ApiError.js';
+
+const cartTotalPriceAndQuantity = cart => {
+  let totalPrice = 0;
+  let totalQuantity = 0;
+  cart?.cartItems?.forEach(item => {
+    totalPrice += item.price * item.quantity;
+    totalQuantity += item.quantity;
+  });
+  cart.totalPrice = totalPrice;
+  cart.totalQuantity = totalQuantity;
+};
 
 export const addToCart = asyncHandler(async (req, res, next) => {
   // 1- if cart is empty, create cart
@@ -35,14 +47,7 @@ export const addToCart = asyncHandler(async (req, res, next) => {
     }
   }
 
-  let totalPrice = 0;
-  let totalQuantity = 0;
-  cart.cartItems.forEach(item => {
-    totalPrice += item.price * item.quantity;
-    totalQuantity += item.quantity;
-  });
-  cart.totalPrice = totalPrice;
-  cart.totalQuantity = totalQuantity;
+  cartTotalPriceAndQuantity(cart);
   await cart.save();
 
   res.status(200).json({
@@ -50,4 +55,32 @@ export const addToCart = asyncHandler(async (req, res, next) => {
     message: 'product added successfully',
     data: cart,
   });
+});
+
+export const getUserCart = asyncHandler(async (req, res, next) => {
+  const cart = await CartModel.findOne({ user: req.user._id });
+  if (!cart) return next(new ApiError('Cart not found for this user', 404));
+  res.status(200).json({ status: 'success', data: cart });
+});
+
+export const removeCartItem = asyncHandler(async (req, res, next) => {
+  const cart = await CartModel.findOneAndUpdate(
+    { user: req.user._id },
+    {
+      // itemId not productId
+      $pull: { cartItems: { _id: req.params.itemId } },
+    },
+    { new: true }
+  );
+  cartTotalPriceAndQuantity(cart);
+  await cart.save();
+  res.status(200).json({ status: 'success', data: cart });
+});
+
+export const clearCart = asyncHandler(async (req, res, next) => {
+  await CartModel.findOneAndDelete({ user: req.user._id });
+
+  res
+    .status(200)
+    .json({ status: 'success', message: 'cart deleted successfully' });
 });
