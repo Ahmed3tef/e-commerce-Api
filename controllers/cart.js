@@ -119,7 +119,7 @@ export const applyCoupon = asyncHandler(async (req, res, next) => {
 
   // 2) get cart based on user ID
 
-  const cart = CartModel.findOne({ user: req.user._id });
+  const cart = await CartModel.findOne({ user: req.user._id });
   if (!cart) return next(new ApiError('no cart found for this user'), 404);
 
   const totalPrice = cart.totalPrice;
@@ -129,8 +129,10 @@ export const applyCoupon = asyncHandler(async (req, res, next) => {
   ).toFixed(2);
 
   cart.totalPriceAfterDiscount = totalPriceAfterDiscount;
-  await cart.save;
-
+  await cart.save();
+  // console.log(totalPrice);
+  // console.log(totalPriceAfterDiscount);
+  // console.log(cart);
   res.status(200).json({
     status: 'success',
     data: {

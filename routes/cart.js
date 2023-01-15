@@ -15,7 +15,9 @@ const router = Router();
 router.use(tokenProtection, accessAllowedTo('user'));
 
 router.route('/').post(addToCart).get(getUserCart).delete(clearCart);
-router.route('/:itemId').delete(removeCartItem).patch(updateCartItemQuantity);
+
 router.patch('/applyCoupon', applyCoupon);
+
+router.route('/:itemId').delete(removeCartItem).patch(updateCartItemQuantity);
 
 export default router;
