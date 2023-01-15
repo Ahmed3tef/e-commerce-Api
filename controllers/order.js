@@ -69,6 +69,7 @@ export const getAllOrders = getAllHandler(OrderModel, 'Orders');
 // get one order
 export const getOneOrder = getOneHandler(OrderModel, 'Order');
 
+// allowed only to admin and manager
 export const updateOrderToPaid = asyncHandler(async (req, res, next) => {
   const order = await OrderModel.findById(req.params.id);
   if (!order) return next(new ApiError('No order found', 404));
@@ -83,6 +84,7 @@ export const updateOrderToPaid = asyncHandler(async (req, res, next) => {
   });
 });
 
+// allowed only to admin and manager
 export const updateOrderToDelivered = asyncHandler(async (req, res, next) => {
   const order = await OrderModel.findById(req.params.id);
   if (!order) return next(new ApiError('No order found', 404));

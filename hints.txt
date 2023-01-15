@@ -328,3 +328,10 @@ reviewSchema.post('remove', async function (next) {
   await this.constructor.createAverageRatingAndQuantity(this.product);
 
 });
+
+
+/////////////////// payment /////////////////////
+
+STRIPE_PUBLIC=pk_test_51MQVfVFRb07u30EJmynW92vyUhFwDFaZeLvqMrZuMwudr4EtyELsIGvD9xeDO5XMBHq6q8G3ND1mWkmWO0GSJsO200TkmP7cC6
+
+STRIPE_SECRET=sk_test_51MQVfVFRb07u30EJFAae0mKoyPELyUQiW40bb4wkfZAQpbx58HkXK6Wn6uSEZAmFgg2jAPcijiOuT6JCZ09QpKDm00YDThz8jw
