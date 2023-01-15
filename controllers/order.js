@@ -4,19 +4,13 @@ import { CartModel } from '../models/cart.js';
 import { OrderModel } from '../models/order.js';
 import { ProductModel } from '../models/product.js';
 import { getAllHandler, getOneHandler } from './crud-handlers.js';
+import Stripe from 'stripe';
 
-export const createCashOrder = asyncHandler(async (req, res, next) => {
-  // 1) get cart depend on cartId (from params)
-  // 2) get order price depend on cart price (check if coupon applied)
-  // 3) create cash order (default)
-  // 4) after create order, get sold products to decrement its quantity and increment its sold quantity
-  // 5) clear cart depend on cartId
-
+export const calcOrderPrice = async cartId => {
   const taxPrice = 0;
   const shippingPrice = 0;
 
   // 1)
-  const { cartId } = req.query;
   const cart = await CartModel.findById(cartId);
   if (!cart) return next(new ApiError('Cart not found', 404));
 
@@ -25,6 +19,21 @@ export const createCashOrder = asyncHandler(async (req, res, next) => {
     ? cart.totalPriceAfterDiscount
     : cart.totalPrice;
   const totalOrderPrice = cartPrice + taxPrice + shippingPrice;
+
+  return { cart, totalOrderPrice };
+};
+
+export const createCashOrder = asyncHandler(async (req, res, next) => {
+  // 1) get cart depend on cartId (from params)
+  // 2) get order price depend on cart price (check if coupon applied)
+  // 3) create cash order (default)
+  // 4) after create order, get sold products to decrement its quantity and increment its sold quantity
+  // 5) clear cart depend on cartId
+
+  // 1), 2)
+  const { cartId } = req.query;
+
+  const { cart, totalOrderPrice } = await calcOrderPrice(cartId);
 
   // 3)
   const order = await OrderModel.create({
@@ -97,4 +106,37 @@ export const updateOrderToDelivered = asyncHandler(async (req, res, next) => {
     status: 'success',
     data: updatedOrder,
   });
+});
+
+export const payWithCard = asyncHandler(async (req, res, next) => {
+  // 1) get cart depend on cartId (from params)
+  // 2) get order price depend on cart price (check if coupon applied)
+  // 3) connect to stripe with session.
+
+  // 1, 2)
+  const { cartId } = req.query;
+  const { cart, totalOrderPrice } = await calcOrderPrice(cartId);
+
+  // 3)
+
+  const session = await Stripe.checkout.sessions.create({
+    line_items: [
+      {
+        // Provide the exact Price ID (for example, pr_1234) of the product you want to sell
+
+        name: req.user.name,
+        quantity: 1,
+        amount: totalOrderPrice,
+        currency: 'egp',
+      },
+    ],
+    mode: 'payment',
+    success_url: `${req.protocol}//${req.get('host')}/orders`,
+    cancel_url: `${req.protocol}//${req.get('host')}/cart`,
+    customer_email: req.user.email,
+    client_reference_id: cart._id,
+    metadata: req.body.shippingAddress,
+  });
+
+  res.status(200).json({ status: 'success', session });
 });
