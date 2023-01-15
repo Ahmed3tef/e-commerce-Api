@@ -88,6 +88,7 @@ export const clearCart = asyncHandler(async (req, res, next) => {
 
 export const updateCartItemQuantity = asyncHandler(async (req, res, next) => {
   const cart = CartModel.findOne({ user: req.user._id });
+
   if (!cart) return next(new ApiError('no cart found for this user'), 404);
 
   const itemIndex = cart.cartItems.findIndex(
@@ -129,10 +130,9 @@ export const applyCoupon = asyncHandler(async (req, res, next) => {
   ).toFixed(2);
 
   cart.totalPriceAfterDiscount = totalPriceAfterDiscount;
+
   await cart.save();
-  // console.log(totalPrice);
-  // console.log(totalPriceAfterDiscount);
-  // console.log(cart);
+
   res.status(200).json({
     status: 'success',
     data: {

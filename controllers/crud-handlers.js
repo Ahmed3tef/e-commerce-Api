@@ -18,6 +18,8 @@ export const getAllHandler = (Model, modelName) =>
 
     const documents = await apiFeatures.mongooseQuery;
 
+    if (!documents) return next(new ApiError(`No ${modelName} found`));
+
     res.status(200).json({ status: 'success', data: documents });
   });
 

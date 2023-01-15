@@ -3,6 +3,7 @@ import ApiError from '../utils/ApiError.js';
 import { CartModel } from '../models/cart.js';
 import { OrderModel } from '../models/order.js';
 import { ProductModel } from '../models/product.js';
+import { getAllHandler, getOneHandler } from './crud-handlers.js';
 
 export const createCashOrder = asyncHandler(async (req, res, next) => {
   // 1) get cart depend on cartId (from params)
@@ -15,7 +16,7 @@ export const createCashOrder = asyncHandler(async (req, res, next) => {
   const shippingPrice = 0;
 
   // 1)
-  const { cartId } = req.params;
+  const { cartId } = req.query;
   const cart = await CartModel.findById(cartId);
   if (!cart) return next(new ApiError('Cart not found', 404));
 
@@ -51,5 +52,47 @@ export const createCashOrder = asyncHandler(async (req, res, next) => {
   res.status(201).json({
     status: 'success',
     data: order,
+  });
+});
+
+// filter orders to get user's orders if role = 'user'
+
+export const filterOrderForLoggedUser = asyncHandler(async (req, res, next) => {
+  if (req.user.role === 'user') req.filterObj = { user: req.user._id };
+  next();
+});
+
+// get all orders
+
+export const getAllOrders = getAllHandler(OrderModel, 'Orders');
+
+// get one order
+export const getOneOrder = getOneHandler(OrderModel, 'Order');
+
+export const updateOrderToPaid = asyncHandler(async (req, res, next) => {
+  const order = await OrderModel.findById(req.params.id);
+  if (!order) return next(new ApiError('No order found', 404));
+
+  order.isPaid = true;
+  order.paidAt = Date.now();
+  const updatedOrder = await order.save();
+
+  res.status(201).json({
+    status: 'success',
+    data: updatedOrder,
+  });
+});
+
+export const updateOrderToDelivered = asyncHandler(async (req, res, next) => {
+  const order = await OrderModel.findById(req.params.id);
+  if (!order) return next(new ApiError('No order found', 404));
+
+  order.isDelivered = true;
+  order.deliveredAt = Date.now();
+  const updatedOrder = await order.save();
+
+  res.status(201).json({
+    status: 'success',
+    data: updatedOrder,
   });
 });

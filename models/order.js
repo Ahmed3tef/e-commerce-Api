@@ -55,5 +55,11 @@ const orderSchema = new Schema(
     timestamps: true,
   }
 );
+orderSchema.pre(/^find/, function (next) {
+  this.populate({ path: 'user', select: 'name image phone email' }).populate({
+    path: 'cartItems.product',
+    select: 'name description price avgRating',
+  });
+});
 
 export const OrderModel = model('Order', orderSchema);
