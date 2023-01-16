@@ -5,6 +5,7 @@ import {
   filterOrderForLoggedUser,
   getAllOrders,
   getOneOrder,
+  payWithCard,
   updateOrderToDelivered,
   updateOrderToPaid,
 } from '../controllers/order.js';
@@ -26,6 +27,7 @@ router
 router
   .route('/:id/pay')
   .patch(accessAllowedTo('admin', 'manager'), updateOrderToPaid);
+
 router
   .route('/:id/deliver')
   .patch(accessAllowedTo('admin', 'manager'), updateOrderToDelivered);
@@ -33,6 +35,7 @@ router
 router.use(accessAllowedTo('user'));
 
 router.route('/create').post(createCashOrder);
+router.route('/checkout').post(payWithCard);
 
 router.route('/:id').get(getOneOrder);
 

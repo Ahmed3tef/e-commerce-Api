@@ -87,7 +87,7 @@ export const clearCart = asyncHandler(async (req, res, next) => {
 });
 
 export const updateCartItemQuantity = asyncHandler(async (req, res, next) => {
-  const cart = CartModel.findOne({ user: req.user._id });
+  const cart = await CartModel.findOne({ user: req.user._id });
 
   if (!cart) return next(new ApiError('no cart found for this user'), 404);
 
@@ -111,7 +111,7 @@ export const updateCartItemQuantity = asyncHandler(async (req, res, next) => {
 
 export const applyCoupon = asyncHandler(async (req, res, next) => {
   // 1) get coupon based on coupon name
-  const coupon = CouponModel.findOne({
+  const coupon = await CouponModel.findOne({
     name: req.body.coupon,
     expiryDate: { $gt: Date.now() },
   });
@@ -124,6 +124,7 @@ export const applyCoupon = asyncHandler(async (req, res, next) => {
   if (!cart) return next(new ApiError('no cart found for this user'), 404);
 
   const totalPrice = cart.totalPrice;
+
   const totalPriceAfterDiscount = (
     totalPrice -
     (totalPrice * coupon.discount) / 100

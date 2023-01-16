@@ -11,6 +11,7 @@ import wishlistRoutes from './wishlist.js';
 import addressRoutes from './address.js';
 import couponRoutes from './coupon.js';
 import cartRoutes from './cart.js';
+import orderRoutes from './order.js';
 
 export const appRoutes = app => {
   // app routes
@@ -28,4 +29,5 @@ export const appRoutes = app => {
   app.use('/address', addressRoutes);
   app.use('/coupons', couponRoutes);
   app.use('/cart', cartRoutes);
+  app.use('/orders', orderRoutes);
 };

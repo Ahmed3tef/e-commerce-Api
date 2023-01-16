@@ -6,7 +6,7 @@ import { ProductModel } from '../models/product.js';
 import { getAllHandler, getOneHandler } from './crud-handlers.js';
 import Stripe from 'stripe';
 
-export const calcOrderPrice = async cartId => {
+export const calcOrderPrice = async (cartId, next) => {
   const taxPrice = 0;
   const shippingPrice = 0;
 
@@ -33,7 +33,7 @@ export const createCashOrder = asyncHandler(async (req, res, next) => {
   // 1), 2)
   const { cartId } = req.query;
 
-  const { cart, totalOrderPrice } = await calcOrderPrice(cartId);
+  const { cart, totalOrderPrice } = await calcOrderPrice(cartId, next);
 
   // 3)
   const order = await OrderModel.create({
@@ -115,24 +115,34 @@ export const payWithCard = asyncHandler(async (req, res, next) => {
 
   // 1, 2)
   const { cartId } = req.query;
-  const { cart, totalOrderPrice } = await calcOrderPrice(cartId);
+
+  const { cart, totalOrderPrice } = await calcOrderPrice(cartId, next);
+  // console.log(cart, totalOrderPrice);
 
   // 3)
-
-  const session = await Stripe.checkout.sessions.create({
+  const stripe = Stripe(process.env.STRIPE_SECRET);
+  const session = await stripe.checkout.sessions.create({
     line_items: [
       {
         // Provide the exact Price ID (for example, pr_1234) of the product you want to sell
-
-        name: req.user.name,
         quantity: 1,
-        amount: totalOrderPrice,
-        currency: 'egp',
+        price_data: {
+          currency: 'egp',
+          // amount: totalOrderPrice * 100,
+          unit_amount: totalOrderPrice * 100,
+          product_data: {
+            name: req.user.name,
+            // name: `${tour.name} Tour`,
+            // description: tour.summary,
+            // images: [`https://www.natours.dev/img/tours/${tour.imageCover}`],
+          },
+        },
+        // images: [`${cart.cartItems.product.mainImage}`]
       },
     ],
     mode: 'payment',
-    success_url: `${req.protocol}//${req.get('host')}/orders`,
-    cancel_url: `${req.protocol}//${req.get('host')}/cart`,
+    success_url: `${req.protocol}://${req.get('host')}/orders`,
+    cancel_url: `${req.protocol}://${req.get('host')}/cart`,
     customer_email: req.user.email,
     client_reference_id: cart._id,
     metadata: req.body.shippingAddress,

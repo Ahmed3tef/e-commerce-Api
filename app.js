@@ -8,6 +8,9 @@ import { globalError } from './middlewares/error.js';
 import { dbConnection } from './utils/dbConnection.js';
 import { appRoutes } from './routes/index.js';
 
+import cors from 'cors';
+import compression from 'compression';
+
 // routes are implemented in routes/index.js
 
 dotenv.config({ path: './config.env' });
@@ -17,6 +20,11 @@ dotenv.config({ path: './config.env' });
 //   app.use(morgan('dev'));
 // }
 const app = express();
+
+app.use(cors());
+
+// compress responses
+app.use(compression());
 
 app.use(bodyParser.json({ limit: '30mb', extended: true }));
 app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }));
