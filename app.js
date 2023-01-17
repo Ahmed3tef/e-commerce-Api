@@ -26,8 +26,8 @@ app.use(cors());
 // compress responses
 app.use(compression());
 
-app.use(bodyParser.json({ limit: '30mb', extended: true }));
-app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }));
+app.use(bodyParser.json({ limit: '1mb', extended: true }));
+app.use(bodyParser.urlencoded({ limit: '1mb', extended: true }));
 
 // path.resolve() === __dirname in CommonJS
 app.use(express.static(path.join(path.resolve(), 'uploads')));
