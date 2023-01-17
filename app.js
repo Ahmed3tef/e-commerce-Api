@@ -7,9 +7,12 @@ import path from 'path';
 import { globalError } from './middlewares/error.js';
 import { dbConnection } from './utils/dbConnection.js';
 import { appRoutes } from './routes/index.js';
-
+import mongoSanitize from 'express-mongo-sanitize';
 import cors from 'cors';
 import compression from 'compression';
+
+import rateLimit from 'express-rate-limit';
+import hpp from 'hpp';
 
 // routes are implemented in routes/index.js
 
@@ -29,11 +32,24 @@ app.use(compression());
 app.use(bodyParser.json({ limit: '1mb', extended: true }));
 app.use(bodyParser.urlencoded({ limit: '1mb', extended: true }));
 
+// To remove data using these defaults: عشان لو جاي داتا علي اساس انه اوبجكت او مونجو اوبريتور ف دا هيبوظ الدنيا وممكن يخلي الهاكر يدخل علي اي ايميل بيماتش مع الباسورد مثلا
+app.use(mongoSanitize());
+
+app.use(hpp({ whitelist: ['price', 'avgRating', 'ratings', 'quantity'] })); // <- عشان لو جاي اكتر  من قيمة لنفس الحاجة ف الكويري او البادي او اي حتة ياخد بس اخر قيمة مياخدهمش الاتنين
+
 // path.resolve() === __dirname in CommonJS
 app.use(express.static(path.join(path.resolve(), 'uploads')));
 
 // env vars
 const PORT = process.env.PORT || 5000;
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 50, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+});
+
+// Apply the rate limiting middleware to all requests
+app.use('/auth', limiter);
 
 // app routes
 appRoutes(app);
