@@ -13,6 +13,7 @@ import compression from 'compression';
 
 import rateLimit from 'express-rate-limit';
 import hpp from 'hpp';
+import xss from 'xss-clean';
 
 // routes are implemented in routes/index.js
 
@@ -34,6 +35,7 @@ app.use(bodyParser.urlencoded({ limit: '1mb', extended: true }));
 
 // To remove data using these defaults: عشان لو جاي داتا علي اساس انه اوبجكت او مونجو اوبريتور ف دا هيبوظ الدنيا وممكن يخلي الهاكر يدخل علي اي ايميل بيماتش مع الباسورد مثلا
 app.use(mongoSanitize());
+app.use(xss()); // to clean request inputs from any html content
 
 app.use(hpp({ whitelist: ['price', 'avgRating', 'ratings', 'quantity'] })); // <- عشان لو جاي اكتر  من قيمة لنفس الحاجة ف الكويري او البادي او اي حتة ياخد بس اخر قيمة مياخدهمش الاتنين
 
