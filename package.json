@@ -5,8 +5,8 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon app.js",
-    "start": "NODE_ENV=production node app.js"
+    "start": "nodemon app.js",
+    "prod": "NODE_ENV=production node app.js"
   },
   "repository": {
     "type": "git"
