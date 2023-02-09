@@ -12,9 +12,9 @@ export const getAllHandler = (Model, modelName) =>
     const apiFeatures = new ApiFeatures(Model.find(filter), req.query)
       .paginate()
       .sort()
-      .search()
       .filter()
       .limitFields();
+    // .search()
 
     const documents = await apiFeatures.mongooseQuery;
 
